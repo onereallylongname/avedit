@@ -13,10 +13,6 @@
 
 A terminal-based Avro schema editor inspired by lazygit. Navigate, edit, and manage `.avsc` schemas entirely from your terminal with vim-like keybindings, undo/redo, and live theme switching.
 
-![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?logo=go&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)
-
 ## Why avedit?
 
 Working with Avro schemas in a text editor means juggling deeply nested JSON, remembering type syntax, and manually tracking named type references. avedit gives you:
@@ -25,6 +21,8 @@ Working with Avro schemas in a text editor means juggling deeply nested JSON, re
 - **Safe editing** — undo/redo everything, type pickers prevent typos
 - **Named type awareness** — rename a record and all references update automatically
 - **Zero setup** — single binary, no runtime dependencies
+
+![intro_gif](docs/images/avedit_show.gif)
 
 ## Features
 
