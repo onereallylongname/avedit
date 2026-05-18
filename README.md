@@ -66,7 +66,7 @@ Once inside:
 ### From source
 
 ```bash
-go install github.com/onereallylongname/avro-editor-tui/cmd/avedit@latest
+go install github.com/onereallylongname/avedit/cmd/avedit@latest
 ```
 
 _**Note**: Add the go installation path to you $PATH_
