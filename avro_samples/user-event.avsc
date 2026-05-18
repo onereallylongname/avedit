@@ -1,0 +1,105 @@
+{
+  "type": "record",
+  "name": "UserEvent",
+  "namespace": "com.example.analytics.v1",
+  "doc": "User interaction event for analytics (inspired by real tracking systems)",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Unique event identifier"
+    },
+    {
+      "name": "eventName",
+      "type": "string",
+      "doc": "e.g., page_view, button_click, form_submit"
+    },
+    {
+      "name": "eventTimestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "userId",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Null if anonymous"
+    },
+    {
+      "name": "sessionId",
+      "type": "string"
+    },
+    {
+      "name": "ipAddress",
+      "type": "string"
+    },
+    {
+      "name": "userAgent",
+      "type": "string",
+      "doc": "Browser user agent string"
+    },
+    {
+      "name": "deviceInfo",
+      "type": {
+        "type": "record",
+        "name": "DeviceInfo",
+        "fields": [
+          {"name": "deviceType", "type": ["MOBILE", "TABLET", "DESKTOP", "OTHER"]},
+          {"name": "osName", "type": "string"},
+          {"name": "osVersion", "type": "string"},
+          {"name": "browserName", "type": "string"},
+          {"name": "browserVersion", "type": "string"}
+        ]
+      }
+    },
+    {
+      "name": "geoLocation",
+      "type": ["null", {
+        "type": "record",
+        "name": "GeoLocation",
+        "fields": [
+          {"name": "country", "type": "string"},
+          {"name": "region", "type": ["null", "string"], "default": null},
+          {"name": "city", "type": ["null", "string"], "default": null},
+          {"name": "latitude", "type": ["null", "double"], "default": null},
+          {"name": "longitude", "type": ["null", "double"], "default": null}
+        ]
+      }],
+      "default": null
+    },
+    {
+      "name": "properties",
+      "type": {
+        "type": "map",
+        "values": ["null", "string", "int", "double", "boolean"]
+      },
+      "default": {},
+      "doc": "Custom event properties"
+    },
+    {
+      "name": "pageContext",
+      "type": {
+        "type": "record",
+        "name": "PageContext",
+        "fields": [
+          {"name": "url", "type": "string"},
+          {"name": "referrer", "type": ["null", "string"], "default": null},
+          {"name": "title", "type": ["null", "string"], "default": null},
+          {"name": "viewport", "type": ["null", {
+            "type": "record",
+            "name": "Viewport",
+            "fields": [
+              {"name": "width", "type": "int"},
+              {"name": "height", "type": "int"}
+            ]
+          }], "default": null}
+        ]
+      }
+    }
+  ]
+}

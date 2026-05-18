@@ -1,0 +1,20 @@
+{
+  "name": "monokai",
+  "fg": "#f8f8f2",
+  "bg": "#272822",
+  "dim": "#a6a28c",
+  "muted": "#75715e",
+  "primary": "#66d9ef",
+  "secondary": "#ae81ff",
+  "success": "#a6e22e",
+  "warning": "#fd971f",
+  "error": "#f92672",
+  "badge_record": "#66d9ef",
+  "badge_field": "#a6e22e",
+  "badge_enum": "#ae81ff",
+  "badge_array": "#fd971f",
+  "badge_map": "#66d9ef",
+  "badge_union": "#f92672",
+  "badge_fixed": "#e6db74",
+  "status_bg": "#3e3d32"
+}

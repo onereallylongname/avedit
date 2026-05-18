@@ -1,0 +1,14 @@
+{
+  "commands": [
+    "w",
+    "wq",
+    "theme catppuccin-mocha",
+    "export output.avsc"
+  ],
+  "searches": [
+    "n:order",
+    "t:record",
+    "timestamp",
+    "a:OrderEvent"
+  ]
+}

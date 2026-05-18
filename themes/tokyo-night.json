@@ -1,0 +1,20 @@
+{
+  "name": "tokyo-night",
+  "fg": "#c0caf5",
+  "bg": "#1a1b26",
+  "dim": "#a9b1d6",
+  "muted": "#727ab0",
+  "primary": "#7aa2f7",
+  "secondary": "#bb9af7",
+  "success": "#9ece6a",
+  "warning": "#e0af68",
+  "error": "#f7768e",
+  "badge_record": "#7aa2f7",
+  "badge_field": "#9ece6a",
+  "badge_enum": "#bb9af7",
+  "badge_array": "#e0af68",
+  "badge_map": "#73daca",
+  "badge_union": "#d19a66",
+  "badge_fixed": "#2ac3de",
+  "status_bg": "#16161e"
+}

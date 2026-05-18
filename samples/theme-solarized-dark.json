@@ -1,0 +1,21 @@
+{
+  "name": "solarized-dark",
+  "fg": "#839496",
+  "bg": "#002b36",
+  "dim": "#586e75",
+  "muted": "#073642",
+  "primary": "#268bd2",
+  "secondary": "#6c71c4",
+  "success": "#859900",
+  "warning": "#b58900",
+  "error": "#dc322f",
+  "badge_record": "#268bd2",
+  "badge_field": "#859900",
+  "badge_enum": "#6c71c4",
+  "badge_array": "#b58900",
+  "badge_map": "#2aa198",
+  "badge_union": "#cb4b16",
+  "badge_fixed": "#2aa198",
+  "badge_named": "#d33682",
+  "status_bg": "#073642"
+}

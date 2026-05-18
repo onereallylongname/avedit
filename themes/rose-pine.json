@@ -1,0 +1,20 @@
+{
+  "name": "rose-pine",
+  "fg": "#e0def4",
+  "bg": "#191724",
+  "dim": "#d5c4e0",
+  "muted": "#9893a5",
+  "primary": "#d5bfff",
+  "secondary": "#c4a7e7",
+  "success": "#9ccfd8",
+  "warning": "#f6c177",
+  "error": "#eb6f92",
+  "badge_record": "#9ccfd8",
+  "badge_field": "#ebbcba",
+  "badge_enum": "#c4a7e7",
+  "badge_array": "#f6c177",
+  "badge_map": "#31748f",
+  "badge_union": "#ebbcba",
+  "badge_fixed": "#908caa",
+  "status_bg": "#1f1d2e"
+}

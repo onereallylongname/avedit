@@ -1,0 +1,205 @@
+{
+  "doc": "E-commerce order event from public sources",
+  "fields": [
+    {
+      "doc": "Unique order identifier",
+      "name": "orderId",
+      "type": "string"
+    },
+    {
+      "doc": "When the order was created",
+      "name": "olllllllllllllllllll",
+      "type": {
+        "logicalType": "timestamp-millis",
+        "type": "long"
+      }
+    },
+    {
+      "doc": "Reference to customer",
+      "name": "customerId",
+      "type": "string"
+    },
+    {
+      "doc": "Current order status",
+      "name": "status",
+      "type": {
+        "name": "OrderStatus",
+        "symbols": [
+          "PENDING",
+          "CONFIRMED",
+          "SHIPPED",
+          "DELIVERED",
+          "CANCELLED",
+          "REFUNDED"
+        ],
+        "type": "enum"
+      }
+    },
+    {
+      "doc": "Ordered items",
+      "name": "items",
+      "type": {
+        "items": {
+          "fields": [
+            {
+              "name": "productId",
+              "type": "string"
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            },
+            {
+              "name": "unitPrice",
+              "type": {
+                "logicalType": "decimal",
+                "precision": 10,
+                "scale": 2,
+                "type": "bytes"
+              }
+            },
+            {
+              "default": null,
+              "name": "discount",
+              "type": [
+                "null",
+                {
+                  "logicalType": "decimal",
+                  "precision": 10,
+                  "scale": 2,
+                  "type": "bytes"
+                }
+              ]
+            }
+          ],
+          "name": "OrderItem",
+          "type": "record"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "name": "shippingAddress",
+      "type": {
+        "fields": [
+          {
+            "name": "street",
+            "type": "string"
+          },
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "type": "string"
+          },
+          {
+            "name": "zipCode",
+            "type": "string"
+          },
+          {
+            "name": "country",
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "type": "string"
+          },
+          {
+            "name": "zip",
+            "type": "string"
+          },
+          {
+            "name": "zipCode",
+            "type": "string"
+          },
+          {
+            "name": "zipCode",
+            "type": "string"
+          }
+        ],
+        "name": "Address",
+        "type": "record"
+      }
+    },
+    {
+      "name": "paymentMethod",
+      "type": {
+        "name": "PaymentMethod",
+        "symbols": [
+          "CREDIT_CARD",
+          "DEBIT_CARD",
+          "PAYPAL",
+          "BANK_TRANSFER",
+          "CRYPTO"
+        ],
+        "type": "enum"
+      }
+    },
+    {
+      "name": "totalAmount",
+      "type": {
+        "logicalType": "decimal",
+        "precision": 12,
+        "scale": 2,
+        "type": "bytes"
+      }
+    },
+    {
+      "default": {},
+      "doc": "Additional key-value pairs",
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "x-custom": "custom-feild-test"
+    },
+    {
+      "default": [],
+      "name": "tags",
+      "type": {
+        "items": "string",
+        "type": "array"
+      }
+    },
+    {
+      "name": "paymentMethod",
+      "type": {
+        "name": "PaymentMethod",
+        "symbols": [
+          "CREDIT_CARD",
+          "DEBIT_CARD",
+          "PAYPAL",
+          "BANK_TRANSFER",
+          "CRYPTO"
+        ],
+        "type": "enum"
+      }
+    },
+    {
+      "name": "new_field",
+      "type": "long"
+    },
+    {
+      "name": "new_field",
+      "type": "boolean"
+    },
+    {
+      "name": "new_field",
+      "type": "boolean"
+    },
+    {
+      "name": "new_field",
+      "type": "long"
+    },
+    {
+      "name": "new_field",
+      "type": "long"
+    }
+  ],
+  "name": "Order",
+  "namespace": "com.example.ecommerce.v1",
+  "type": "record"
+}

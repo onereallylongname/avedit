@@ -1,0 +1,20 @@
+{
+  "name": "light",
+  "fg": "#2c2c2c",
+  "bg": "#fafafa",
+  "dim": "#555555",
+  "muted": "#888888",
+  "primary": "#0066ff",
+  "secondary": "#9333ea",
+  "success": "#28a745",
+  "warning": "#d18616",
+  "error": "#c53030",
+  "badge_record": "#0066ff",
+  "badge_field": "#28a745",
+  "badge_enum": "#9333ea",
+  "badge_array": "#d18616",
+  "badge_map": "#0e8a6b",
+  "badge_union": "#b45309",
+  "badge_fixed": "#1b7c83",
+  "status_bg": "#e8eaed"
+}

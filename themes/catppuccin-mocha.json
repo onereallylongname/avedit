@@ -1,0 +1,20 @@
+{
+  "name": "catppuccin-mocha",
+  "fg": "#cdd6f4",
+  "bg": "#1e1e2e",
+  "dim": "#bac2de",
+  "muted": "#908caa",
+  "primary": "#89b4fa",
+  "secondary": "#cba6f7",
+  "success": "#a6e3a1",
+  "warning": "#f9e2af",
+  "error": "#f38ba8",
+  "badge_record": "#89b4fa",
+  "badge_field": "#a6e3a1",
+  "badge_enum": "#cba6f7",
+  "badge_array": "#fab387",
+  "badge_map": "#94e2d5",
+  "badge_union": "#f5a97f",
+  "badge_fixed": "#89dceb",
+  "status_bg": "#181825"
+}

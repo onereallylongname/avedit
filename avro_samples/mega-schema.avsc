@@ -1,0 +1,1039 @@
+{
+  "type": "record",
+  "name": "MegaSchema",
+  "namespace": "com.example.generated.v1",
+  "doc": "Procedurally generated comprehensive schema with 200+ fields of all Avro types, logical types, nested structures, and complex types",
+  "fields": [
+    {
+      "name": "field_int_00",
+      "type": "int",
+      "default": null,
+      "doc": "Field #1"
+    },
+    {
+      "name": "field_int_02",
+      "type": "int",
+      "doc": "Field #3"
+    },
+    {
+      "name": "field_int_03",
+      "type": "int",
+      "doc": "Field #4"
+    },
+    {
+      "name": "field_int_04",
+      "type": "int",
+      "doc": "Field #5"
+    },
+    {
+      "name": "field_int_06",
+      "type": "int",
+      "doc": "Field #7"
+    },
+    {
+      "name": "field_int_07",
+      "type": "int",
+      "doc": "Field #8"
+    },
+    {
+      "name": "field_int_08",
+      "type": "int",
+      "default": null,
+      "doc": "Field #9"
+    },
+    {
+      "name": "field_int_10",
+      "type": "int",
+      "doc": "Field #11"
+    },
+    {
+      "name": "field_int_11",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      },
+      "doc": "Field #12"
+    },
+    {
+      "name": "field_int_12",
+      "type": "int",
+      "doc": "Field #13"
+    },
+    {
+      "name": "field_int_14",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      },
+      "doc": "Field #15"
+    },
+    {
+      "name": "field_int_15",
+      "type": "int",
+      "doc": "Field #16"
+    },
+    {
+      "name": "field_int_16",
+      "type": {
+        "type": "int",
+        "logicalType": "time-millis"
+      },
+      "doc": "Field #17"
+    },
+    {
+      "name": "field_int_17",
+      "type": "int",
+      "default": null,
+      "doc": "Field #18"
+    },
+    {
+      "name": "field_int_19",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Field #20"
+    },
+    {
+      "name": "field_int_20",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      },
+      "doc": "Field #21"
+    },
+    {
+      "name": "field_int_21",
+      "type": "int",
+      "doc": "Field #22"
+    },
+    {
+      "name": "field_int_23",
+      "type": [
+        "null",
+        {
+          "type": "int",
+          "logicalType": "date"
+        }
+      ],
+      "doc": "Field #24"
+    },
+    {
+      "name": "field_int_24",
+      "type": "int",
+      "doc": "Field #25"
+    },
+    {
+      "name": "field_int_25",
+      "type": "int",
+      "doc": "Field #26"
+    },
+    {
+      "name": "field_int_27",
+      "type": "int",
+      "doc": "Field #28"
+    },
+    {
+      "name": "field_int_28",
+      "type": "int",
+      "doc": "Field #29"
+    },
+    {
+      "name": "field_int_29",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      },
+      "default": null,
+      "doc": "Field #30"
+    },
+    {
+      "name": "field_long_00",
+      "type": "long",
+      "default": null,
+      "doc": "Field #31"
+    },
+    {
+      "name": "field_long_02",
+      "type": "long",
+      "doc": "Field #33"
+    },
+    {
+      "name": "field_long_03",
+      "type": "long",
+      "doc": "Field #34"
+    },
+    {
+      "name": "field_long_04",
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null,
+      "doc": "Field #35"
+    },
+    {
+      "name": "field_long_06",
+      "type": {
+        "type": "long",
+        "logicalType": "local-timestamp-millis"
+      },
+      "doc": "Field #37"
+    },
+    {
+      "name": "field_long_07",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Field #38"
+    },
+    {
+      "name": "field_long_08",
+      "type": "long",
+      "doc": "Field #39"
+    },
+    {
+      "name": "field_long_10",
+      "type": "long",
+      "doc": "Field #41"
+    },
+    {
+      "name": "field_long_11",
+      "type": "long",
+      "default": null,
+      "doc": "Field #42"
+    },
+    {
+      "name": "field_long_12",
+      "type": "long",
+      "doc": "Field #43"
+    },
+    {
+      "name": "field_long_13",
+      "type": "long",
+      "doc": "Field #44"
+    },
+    {
+      "name": "field_long_15",
+      "type": "long",
+      "doc": "Field #46"
+    },
+    {
+      "name": "field_long_16",
+      "type": "long",
+      "doc": "Field #47"
+    },
+    {
+      "name": "field_long_17",
+      "type": "long",
+      "doc": "Field #48"
+    },
+    {
+      "name": "field_long_19",
+      "type": "long",
+      "doc": "Field #50"
+    },
+    {
+      "name": "field_long_20",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "default": null,
+      "doc": "Field #51"
+    },
+    {
+      "name": "field_long_21",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros"
+      },
+      "doc": "Field #52"
+    },
+    {
+      "name": "field_long_23",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Field #54"
+    },
+    {
+      "name": "field_long_24",
+      "type": "long",
+      "doc": "Field #55"
+    },
+    {
+      "name": "field_long_25",
+      "type": {
+        "type": "long",
+        "logicalType": "local-timestamp-millis"
+      },
+      "doc": "Field #56"
+    },
+    {
+      "name": "field_long_26",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Field #57"
+    },
+    {
+      "name": "field_long_28",
+      "type": "long",
+      "default": null,
+      "doc": "Field #59"
+    },
+    {
+      "name": "field_long_29",
+      "type": "long",
+      "doc": "Field #60"
+    },
+    {
+      "name": "field_float_00",
+      "type": "float",
+      "doc": "Field #61"
+    },
+    {
+      "name": "field_float_02",
+      "type": "float",
+      "doc": "Field #63"
+    },
+    {
+      "name": "field_float_03",
+      "type": "float",
+      "doc": "Field #64"
+    },
+    {
+      "name": "field_float_04",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Field #65"
+    },
+    {
+      "name": "field_float_06",
+      "type": "float",
+      "doc": "Field #67"
+    },
+    {
+      "name": "field_float_07",
+      "type": "float",
+      "doc": "Field #68"
+    },
+    {
+      "name": "field_float_08",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Field #69"
+    },
+    {
+      "name": "field_float_09",
+      "type": "float",
+      "doc": "Field #70"
+    },
+    {
+      "name": "field_float_11",
+      "type": "float",
+      "doc": "Field #72"
+    },
+    {
+      "name": "field_float_12",
+      "type": "float",
+      "doc": "Field #73"
+    },
+    {
+      "name": "field_float_13",
+      "type": "float",
+      "doc": "Field #74"
+    },
+    {
+      "name": "field_float_15",
+      "type": "float",
+      "default": null,
+      "doc": "Field #76"
+    },
+    {
+      "name": "field_float_16",
+      "type": "float",
+      "doc": "Field #77"
+    },
+    {
+      "name": "field_float_17",
+      "type": "float",
+      "doc": "Field #78"
+    },
+    {
+      "name": "field_float_19",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Field #80"
+    },
+    {
+      "name": "field_float_20",
+      "type": "float",
+      "doc": "Field #81"
+    },
+    {
+      "name": "field_float_21",
+      "type": "float",
+      "doc": "Field #82"
+    },
+    {
+      "name": "field_float_22",
+      "type": "float",
+      "doc": "Field #83"
+    },
+    {
+      "name": "field_float_24",
+      "type": "float",
+      "doc": "Field #85"
+    },
+    {
+      "name": "field_float_25",
+      "type": "float",
+      "default": null,
+      "doc": "Field #86"
+    },
+    {
+      "name": "field_float_26",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Field #87"
+    },
+    {
+      "name": "field_float_28",
+      "type": "float",
+      "doc": "Field #89"
+    },
+    {
+      "name": "field_float_29",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Field #90"
+    },
+    {
+      "name": "field_double_00",
+      "type": "double",
+      "doc": "Field #91"
+    },
+    {
+      "name": "field_double_02",
+      "type": "double",
+      "doc": "Field #93"
+    },
+    {
+      "name": "field_double_03",
+      "type": "double",
+      "doc": "Field #94"
+    },
+    {
+      "name": "field_double_04",
+      "type": [
+        "null",
+        "double"
+      ],
+      "doc": "Field #95"
+    },
+    {
+      "name": "field_double_05",
+      "type": "double",
+      "default": null,
+      "doc": "Field #96"
+    },
+    {
+      "name": "field_double_07",
+      "type": "double",
+      "doc": "Field #98"
+    },
+    {
+      "name": "field_double_08",
+      "type": [
+        "null",
+        "double"
+      ],
+      "doc": "Field #99"
+    },
+    {
+      "name": "field_double_09",
+      "type": "double",
+      "doc": "Field #100"
+    },
+    {
+      "name": "field_double_11",
+      "type": "double",
+      "doc": "Field #102"
+    },
+    {
+      "name": "field_double_12",
+      "type": "double",
+      "doc": "Field #103"
+    },
+    {
+      "name": "field_double_13",
+      "type": [
+        "null",
+        "double"
+      ],
+      "doc": "Field #104"
+    },
+    {
+      "name": "field_double_15",
+      "type": "double",
+      "doc": "Field #106"
+    },
+    {
+      "name": "field_double_16",
+      "type": "double",
+      "doc": "Field #107"
+    },
+    {
+      "name": "field_double_17",
+      "type": "double",
+      "doc": "Field #108"
+    },
+    {
+      "name": "field_double_18",
+      "type": "double",
+      "doc": "Field #109"
+    },
+    {
+      "name": "field_double_19",
+      "type": "double",
+      "default": null,
+      "doc": "Field #110"
+    },
+    {
+      "name": "field_double_20",
+      "type": "double",
+      "doc": "Field #111"
+    },
+    {
+      "name": "field_double_21",
+      "type": "double",
+      "doc": "Field #112"
+    },
+    {
+      "name": "field_double_22",
+      "type": "double",
+      "doc": "Field #113"
+    },
+    {
+      "name": "field_double_24",
+      "type": "double",
+      "doc": "Field #115"
+    },
+    {
+      "name": "field_double_25",
+      "type": "double",
+      "doc": "Field #116"
+    },
+    {
+      "name": "field_double_26",
+      "type": "double",
+      "doc": "Field #117"
+    },
+    {
+      "name": "field_double_28",
+      "type": "double",
+      "doc": "Field #119"
+    },
+    {
+      "name": "field_double_29",
+      "type": "double",
+      "doc": "Field #120"
+    },
+    {
+      "name": "field_string_00",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Field #121"
+    },
+    {
+      "name": "field_string_01",
+      "type": "string",
+      "doc": "Field #122"
+    },
+    {
+      "name": "field_string_03",
+      "type": "string",
+      "doc": "Field #124"
+    },
+    {
+      "name": "field_string_04",
+      "type": "string",
+      "doc": "Field #125"
+    },
+    {
+      "name": "field_string_05",
+      "type": "string",
+      "doc": "Field #126"
+    },
+    {
+      "name": "field_string_07",
+      "type": "string",
+      "doc": "Field #128"
+    },
+    {
+      "name": "field_string_08",
+      "type": "string",
+      "doc": "Field #129"
+    },
+    {
+      "name": "field_string_09",
+      "type": "string",
+      "default": null,
+      "doc": "Field #130"
+    },
+    {
+      "name": "field_string_11",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Field #132"
+    },
+    {
+      "name": "field_string_12",
+      "type": "string",
+      "doc": "Field #133"
+    },
+    {
+      "name": "field_string_13",
+      "type": "string",
+      "default": null,
+      "doc": "Field #134"
+    },
+    {
+      "name": "field_string_14",
+      "type": "string",
+      "doc": "Field #135"
+    },
+    {
+      "name": "field_string_16",
+      "type": "string",
+      "doc": "Field #137"
+    },
+    {
+      "name": "field_string_17",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Field #138"
+    },
+    {
+      "name": "field_string_18",
+      "type": "string",
+      "doc": "Field #139"
+    },
+    {
+      "name": "field_string_20",
+      "type": "string",
+      "doc": "Field #141"
+    },
+    {
+      "name": "field_string_21",
+      "type": "string",
+      "doc": "Field #142"
+    },
+    {
+      "name": "field_string_22",
+      "type": "string",
+      "doc": "Field #143"
+    },
+    {
+      "name": "field_string_24",
+      "type": "string",
+      "doc": "Field #145"
+    },
+    {
+      "name": "field_string_25",
+      "type": "string",
+      "doc": "Field #146"
+    },
+    {
+      "name": "field_string_26",
+      "type": "string",
+      "doc": "Field #147"
+    },
+    {
+      "name": "field_string_27",
+      "type": "string",
+      "doc": "Field #148"
+    },
+    {
+      "name": "field_string_29",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Field #150"
+    },
+    {
+      "name": "field_bytes_00",
+      "type": [
+        "null",
+        "bytes"
+      ],
+      "doc": "Field #151"
+    },
+    {
+      "name": "field_bytes_01",
+      "type": "bytes",
+      "doc": "Field #152"
+    },
+    {
+      "name": "field_bytes_03",
+      "type": "bytes",
+      "doc": "Field #154"
+    },
+    {
+      "name": "field_bytes_04",
+      "type": "bytes",
+      "doc": "Field #155"
+    },
+    {
+      "name": "field_bytes_05",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "uuid"
+        }
+      ],
+      "doc": "Field #156"
+    },
+    {
+      "name": "field_bytes_07",
+      "type": "bytes",
+      "doc": "Field #158"
+    },
+    {
+      "name": "field_bytes_08",
+      "type": {
+        "type": "bytes",
+        "logicalType": "uuid"
+      },
+      "doc": "Field #159"
+    },
+    {
+      "name": "field_bytes_09",
+      "type": "bytes",
+      "default": null,
+      "doc": "Field #160"
+    },
+    {
+      "name": "field_bytes_10",
+      "type": "bytes",
+      "doc": "Field #161"
+    },
+    {
+      "name": "field_bytes_11",
+      "type": {
+        "type": "bytes",
+        "logicalType": "uuid"
+      },
+      "default": null,
+      "doc": "Field #162"
+    },
+    {
+      "name": "field_bytes_12",
+      "type": [
+        "null",
+        "bytes"
+      ],
+      "doc": "Field #163"
+    },
+    {
+      "name": "field_bytes_13",
+      "type": "bytes",
+      "doc": "Field #164"
+    },
+    {
+      "name": "field_bytes_14",
+      "type": "bytes",
+      "doc": "Field #165"
+    },
+    {
+      "name": "field_bytes_16",
+      "type": "bytes",
+      "doc": "Field #167"
+    },
+    {
+      "name": "field_bytes_17",
+      "type": "bytes",
+      "doc": "Field #168"
+    },
+    {
+      "name": "field_bytes_18",
+      "type": [
+        "null",
+        "bytes"
+      ],
+      "doc": "Field #169"
+    },
+    {
+      "name": "field_bytes_20",
+      "type": "bytes",
+      "doc": "Field #171"
+    },
+    {
+      "name": "field_bytes_21",
+      "type": "bytes",
+      "doc": "Field #172"
+    },
+    {
+      "name": "field_bytes_22",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 10,
+        "scale": 2
+      },
+      "doc": "Field #173"
+    },
+    {
+      "name": "field_bytes_23",
+      "type": "bytes",
+      "doc": "Field #174"
+    },
+    {
+      "name": "field_bytes_25",
+      "type": [
+        "null",
+        "bytes"
+      ],
+      "doc": "Field #176"
+    },
+    {
+      "name": "field_bytes_26",
+      "type": "bytes",
+      "doc": "Field #177"
+    },
+    {
+      "name": "field_bytes_27",
+      "type": "bytes",
+      "doc": "Field #178"
+    },
+    {
+      "name": "field_bytes_29",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 10,
+          "scale": 2
+        }
+      ],
+      "doc": "Field #180"
+    },
+    {
+      "name": "field_boolean_00",
+      "type": "boolean",
+      "doc": "Field #181"
+    },
+    {
+      "name": "field_boolean_01",
+      "type": "boolean",
+      "doc": "Field #182"
+    },
+    {
+      "name": "field_boolean_03",
+      "type": "boolean",
+      "doc": "Field #184"
+    },
+    {
+      "name": "field_boolean_04",
+      "type": "boolean",
+      "doc": "Field #185"
+    },
+    {
+      "name": "field_boolean_05",
+      "type": "boolean",
+      "doc": "Field #186"
+    },
+    {
+      "name": "field_boolean_06",
+      "type": "boolean",
+      "doc": "Field #187"
+    },
+    {
+      "name": "field_boolean_08",
+      "type": "boolean",
+      "doc": "Field #189"
+    },
+    {
+      "name": "field_boolean_09",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Field #190"
+    },
+    {
+      "name": "field_boolean_10",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Field #191"
+    },
+    {
+      "name": "field_boolean_12",
+      "type": "boolean",
+      "doc": "Field #193"
+    },
+    {
+      "name": "field_boolean_13",
+      "type": "boolean",
+      "default": null,
+      "doc": "Field #194"
+    },
+    {
+      "name": "field_boolean_14",
+      "type": "boolean",
+      "doc": "Field #195"
+    },
+    {
+      "name": "field_boolean_16",
+      "type": "boolean",
+      "doc": "Field #197"
+    },
+    {
+      "name": "field_boolean_17",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Field #198"
+    },
+    {
+      "name": "field_boolean_18",
+      "type": "boolean",
+      "doc": "Field #199"
+    },
+    {
+      "name": "field_boolean_19",
+      "type": "boolean",
+      "default": null,
+      "doc": "Field #200"
+    },
+    {
+      "name": "field_boolean_21",
+      "type": "boolean",
+      "doc": "Field #202"
+    },
+    {
+      "name": "field_boolean_22",
+      "type": "boolean",
+      "default": null,
+      "doc": "Field #203"
+    },
+    {
+      "name": "field_boolean_23",
+      "type": "boolean",
+      "doc": "Field #204"
+    },
+    {
+      "name": "field_boolean_25",
+      "type": "boolean",
+      "default": null,
+      "doc": "Field #206"
+    },
+    {
+      "name": "field_boolean_26",
+      "type": "boolean",
+      "doc": "Field #207"
+    },
+    {
+      "name": "field_boolean_27",
+      "type": "boolean",
+      "doc": "Field #208"
+    },
+    {
+      "name": "field_boolean_29",
+      "type": "boolean",
+      "default": null,
+      "doc": "Field #210"
+    },
+    {
+      "name": "arrays_strings",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "doc": "Array field"
+    },
+    {
+      "name": "maps_values",
+      "type": {
+        "type": "map",
+        "values": "int"
+      },
+      "doc": "Map field"
+    },
+    {
+      "name": "enums",
+      "type": {
+        "type": "enum",
+        "name": "Status",
+        "symbols": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "doc": "Enum"
+    },
+    {
+      "name": "nested",
+      "type": {
+        "type": "record",
+        "name": "Nested",
+        "fields": [
+          {
+            "name": "a",
+            "type": "string"
+          },
+          {
+            "name": "b",
+            "type": "int"
+          }
+        ]
+      },
+      "doc": "Nested record"
+    },
+    {
+      "name": "union_val",
+      "type": [
+        "null",
+        "string",
+        "int",
+        "double"
+      ],
+      "default": null,
+      "doc": "Union"
+    }
+  ]
+}

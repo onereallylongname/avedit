@@ -1,0 +1,20 @@
+{
+  "name": "dracula",
+  "fg": "#f8f8f2",
+  "bg": "#282a36",
+  "dim": "#bdc1c6",
+  "muted": "#8b8b8b",
+  "primary": "#8be9fd",
+  "secondary": "#bd93f9",
+  "success": "#50fa7b",
+  "warning": "#f1fa8c",
+  "error": "#ff5555",
+  "badge_record": "#8be9fd",
+  "badge_field": "#50fa7b",
+  "badge_enum": "#bd93f9",
+  "badge_array": "#ffb86c",
+  "badge_map": "#8be9fd",
+  "badge_union": "#ffb86c",
+  "badge_fixed": "#f1fa8c",
+  "status_bg": "#21222c"
+}

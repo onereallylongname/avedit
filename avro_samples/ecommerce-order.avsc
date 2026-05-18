@@ -1,0 +1,124 @@
+{
+  "type": "record",
+  "name": "Order",
+  "namespace": "com.example.ecommerce.v1",
+  "doc": "E-commerce order event from public sources",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": "string",
+      "doc": "Unique order identifier"
+    },
+    {
+      "name": "orderTimestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "When the order was created"
+    },
+    {
+      "name": "customerId",
+      "type": "string",
+      "doc": "Reference to customer"
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "OrderStatus",
+        "symbols": ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"]
+      },
+      "doc": "Current order status"
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "OrderItem",
+          "fields": [
+            {
+              "name": "productId",
+              "type": "string"
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            },
+            {
+              "name": "unitPrice",
+              "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 10,
+                "scale": 2
+              }
+            },
+            {
+              "name": "discount",
+              "type": ["null", {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 10,
+                "scale": 2
+              }],
+              "default": null
+            }
+          ]
+        }
+      },
+      "doc": "Ordered items"
+    },
+    {
+      "name": "shippingAddress",
+      "type": {
+        "type": "record",
+        "name": "Address",
+        "fields": [
+          {"name": "street", "type": "string"},
+          {"name": "city", "type": "string"},
+          {"name": "state", "type": "string"},
+          {"name": "zipCode", "type": "string"},
+          {"name": "country", "type": "string"}
+        ]
+      }
+    },
+    {
+      "name": "paymentMethod",
+      "type": {
+        "type": "enum",
+        "name": "PaymentMethod",
+        "symbols": ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER", "CRYPTO"]
+      }
+    },
+    {
+      "name": "totalAmount",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 12,
+        "scale": 2
+      }
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Additional key-value pairs",
+      "x-custom": "custom-feild-test"
+    },
+    {
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": []
+    }
+  ]
+}

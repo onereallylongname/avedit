@@ -1,0 +1,13 @@
+{
+  "name": "minimal-dark",
+  "fg": "#e0e0e0",
+  "bg": "#121212",
+  "dim": "#757575",
+  "muted": "#333333",
+  "primary": "#64b5f6",
+  "secondary": "#ce93d8",
+  "success": "#81c784",
+  "warning": "#ffb74d",
+  "error": "#e57373",
+  "status_bg": "#1e1e1e"
+}

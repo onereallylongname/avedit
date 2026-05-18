@@ -1,0 +1,489 @@
+{
+  "aliases": [
+    "PaymentEvent",
+    "TxnRecord"
+  ],
+  "doc": "Payment transaction event with named type references and aliases for processing pipeline",
+  "fields": [
+    {
+      "doc": "Unique transaction identifier",
+      "name": "transactionId",
+      "type": {
+        "logicalType": "uuid",
+        "type": "string"
+      }
+    },
+    {
+      "doc": "Transaction creation timestamp",
+      "name": "createdAt",
+      "type": {
+        "logicalType": "timestamp-millis",
+        "type": "long"
+      }
+    },
+    {
+      "name": "status",
+      "type": {
+        "aliases": [
+          "TxnStatus",
+          "PaymentState"
+        ],
+        "doc": "Lifecycle status of a payment transaction",
+        "name": "TransactionStatus",
+        "namespace": "com.fintech.payments.v2",
+        "symbols": [
+          "PENDING",
+          "AUTHORIZED",
+          "CAPTURED",
+          "SETTLED",
+          "DECLINED",
+          "REFUNDED",
+          "VOIDED"
+        ],
+        "type": "enum"
+      }
+    },
+    {
+      "name": "amount",
+      "type": {
+        "aliases": [
+          "Amount",
+          "MonetaryValue"
+        ],
+        "doc": "Monetary amount with currency",
+        "fields": [
+          {
+            "doc": "Amount in minor units",
+            "name": "value",
+            "type": {
+              "logicalType": "decimal",
+              "precision": 18,
+              "scale": 4,
+              "type": "bytes"
+            }
+          },
+          {
+            "doc": "ISO 4217 currency code (e.g. USD, EUR, GBP)",
+            "name": "currency",
+            "type": "string"
+          }
+        ],
+        "name": "MoneyADSDF",
+        "namespace": "com.fintech.common",
+        "type": "record"
+      }
+    },
+    {
+      "default": null,
+      "doc": "Processing fees charged (references Money by full name)",
+      "name": "fees",
+      "type": [
+        "null",
+        "com.fintech.common.MoneyADSDF"
+      ]
+    },
+    {
+      "default": null,
+      "doc": "Final settled amount — references Money type via its alias",
+      "name": "settlementAmount",
+      "type": [
+        "null",
+        "Amount"
+      ]
+    },
+    {
+      "name": "customer",
+      "type": {
+        "aliases": [
+          "Payer",
+          "AccountHolder"
+        ],
+        "doc": "Customer identity information",
+        "fields": [
+          {
+            "name": "customerId",
+            "type": "string"
+          },
+          {
+            "aliases": [
+              "emailAddress"
+            ],
+            "name": "email",
+            "order": "ignore",
+            "type": "string"
+          },
+          {
+            "aliases": [
+              "displayName",
+              "name"
+            ],
+            "name": "fullName",
+            "type": "string"
+          },
+          {
+            "default": null,
+            "name": "phone",
+            "type": [
+              "null",
+              {
+                "logicalType": "uuid",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "billingAddress",
+            "type": {
+              "aliases": [
+                "PostalAddress",
+                "MailingAddress"
+              ],
+              "doc": "Physical mailing address",
+              "fields": [
+                {
+                  "name": "line1",
+                  "type": "string"
+                },
+                {
+                  "default": null,
+                  "name": "line2",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                {
+                  "name": "city",
+                  "type": "string"
+                },
+                {
+                  "default": null,
+                  "name": "state",
+                  "type": [
+                    "null",
+                    "string"
+                  ]
+                },
+                {
+                  "aliases": [
+                    "zipCode",
+                    "postCode"
+                  ],
+                  "name": "postalCode",
+                  "type": "string"
+                },
+                {
+                  "doc": "ISO 3166-1 alpha-2 code",
+                  "name": "country",
+                  "type": "string"
+                }
+              ],
+              "name": "Address",
+              "namespace": "com.fintech.common",
+              "type": "record"
+            }
+          },
+          {
+            "default": null,
+            "doc": "Reuses Address type; null if same as billing",
+            "name": "shippingAddress",
+            "type": [
+              "null",
+              "com.fintech.common.Address"
+            ]
+          }
+        ],
+        "name": "Customer",
+        "namespace": "com.fintech.customers",
+        "type": "record"
+      }
+    },
+    {
+      "name": "paymentMethod",
+      "type": {
+        "doc": "Instrument used to make payment",
+        "fields": [
+          {
+            "name": "type",
+            "type": {
+              "aliases": [
+                "PaymentChannel"
+              ],
+              "name": "PaymentMethodType",
+              "symbols": [
+                "CARD",
+                "BANK_TRANSFER",
+                "WALLET",
+                "CRYPTO",
+                "BUY_NOW_PAY_LATER"
+              ],
+              "type": "enum"
+            }
+          },
+          {
+            "default": null,
+            "name": "card",
+            "type": [
+              "null",
+              {
+                "aliases": [
+                  "CreditCard",
+                  "DebitCard"
+                ],
+                "fields": [
+                  {
+                    "name": "last4",
+                    "type": "string"
+                  },
+                  {
+                    "name": "brand",
+                    "type": {
+                      "name": "CardBrand",
+                      "symbols": [
+                        "VISA",
+                        "MASTERCARD",
+                        "AMEX",
+                        "DISCOVER",
+                        "OTHER"
+                      ],
+                      "type": "enum"
+                    }
+                  },
+                  {
+                    "name": "expiryMonth",
+                    "type": "int"
+                  },
+                  {
+                    "name": "expiryYear",
+                    "type": "int"
+                  },
+                  {
+                    "doc": "Tokenized card fingerprint for deduplication",
+                    "name": "fingerprint",
+                    "type": "string"
+                  }
+                ],
+                "name": "CardDetails",
+                "type": "record"
+              }
+            ]
+          },
+          {
+            "default": null,
+            "name": "bankTransfer",
+            "type": [
+              "null",
+              {
+                "aliases": [
+                  "WireTransfer",
+                  "ACHDetails"
+                ],
+                "fields": [
+                  {
+                    "name": "bankName",
+                    "type": "string"
+                  },
+                  {
+                    "name": "accountLast4",
+                    "type": "string"
+                  },
+                  {
+                    "default": null,
+                    "name": "routingNumber",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  },
+                  {
+                    "default": null,
+                    "name": "iban",
+                    "type": [
+                      "null",
+                      "string"
+                    ]
+                  }
+                ],
+                "name": "BankTransferDetails",
+                "type": "record"
+              }
+            ]
+          },
+          {
+            "default": null,
+            "doc": "Vault token reference",
+            "name": "tokenId",
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        ],
+        "name": "PaymentMethod",
+        "namespace": "com.fintech.payments.v2",
+        "type": "record"
+      }
+    },
+    {
+      "name": "merchant",
+      "type": {
+        "aliases": [
+          "Seller",
+          "Vendor"
+        ],
+        "fields": [
+          {
+            "name": "merchantId",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "doc": "Merchant Category Code",
+            "name": "mcc",
+            "type": "string"
+          },
+          {
+            "doc": "References Address type via its alias 'PostalAddress'",
+            "name": "address",
+            "type": "PostalAddress"
+          }
+        ],
+        "name": "Merchant",
+        "namespace": "com.fintech.merchants",
+        "type": "record"
+      }
+    },
+    {
+      "default": null,
+      "name": "riskAssessment",
+      "type": [
+        "null",
+        {
+          "doc": "Fraud and risk scoring result",
+          "fields": [
+            {
+              "doc": "Risk score 0.0 to 1.0",
+              "name": "score",
+              "type": "float"
+            },
+            {
+              "name": "level",
+              "type": {
+                "name": "RiskLevel",
+                "symbols": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "CRITICAL"
+                ],
+                "type": "enum"
+              }
+            },
+            {
+              "doc": "List of triggered risk signals",
+              "name": "signals",
+              "type": {
+                "items": "string",
+                "type": "array"
+              }
+            },
+            {
+              "default": false,
+              "name": "reviewRequired",
+              "type": "boolean"
+            },
+            {
+              "name": "evaluatedAt",
+              "type": {
+                "logicalType": "timestamp-millis",
+                "type": "long"
+              }
+            }
+          ],
+          "name": "RiskAssessment",
+          "namespace": "com.fintech.risk",
+          "type": "record"
+        }
+      ]
+    },
+    {
+      "default": [],
+      "name": "refunds",
+      "type": {
+        "items": {
+          "fields": [
+            {
+              "name": "refundId",
+              "type": {
+                "logicalType": "uuid",
+                "type": "string"
+              }
+            },
+            {
+              "doc": "Refund amount (reuses Money)",
+              "name": "amount",
+              "type": "com.fintech.common.MoneyADSDF"
+            },
+            {
+              "name": "reason",
+              "type": {
+                "name": "RefundReason",
+                "symbols": [
+                  "CUSTOMER_REQUEST",
+                  "DUPLICATE",
+                  "FRAUD",
+                  "PRODUCT_DEFECTIVE",
+                  "OTHER"
+                ],
+                "type": "enum"
+              }
+            },
+            {
+              "doc": "Reuses TransactionStatus enum via alias",
+              "name": "status",
+              "type": "TxnStatus"
+            },
+            {
+              "name": "createdAt",
+              "type": {
+                "logicalType": "timestamp-millis",
+                "type": "long"
+              }
+            }
+          ],
+          "name": "Refund",
+          "namespace": "com.fintech.payments.v2",
+          "type": "record"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "default": {},
+      "doc": "Arbitrary key-value metadata attached by integrators",
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": {
+          "logicalType": "uuid",
+          "type": "string"
+        }
+      }
+    },
+    {
+      "default": null,
+      "doc": "Client-provided key to prevent duplicate processing",
+      "name": "idempotencyKey",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  ],
+  "name": "PaymentTransaction",
+  "namespace": "com.fintech.payments.v2",
+  "type": "record"
+}

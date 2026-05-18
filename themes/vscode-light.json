@@ -1,0 +1,20 @@
+{
+  "name": "vscode-light",
+  "fg": "#383838",
+  "bg": "#ffffff",
+  "dim": "#6f6f6f",
+  "muted": "#999999",
+  "primary": "#0000ff",
+  "secondary": "#795e26",
+  "success": "#008000",
+  "warning": "#af8000",
+  "error": "#e81828",
+  "badge_record": "#0000ff",
+  "badge_field": "#008000",
+  "badge_enum": "#795e26",
+  "badge_array": "#af8000",
+  "badge_map": "#267f99",
+  "badge_union": "#af8000",
+  "badge_fixed": "#098658",
+  "status_bg": "#f0f0f0"
+}
