@@ -228,6 +228,11 @@ Themes are JSON files. avedit ships with: `dark`, `light`, `monokai`, `catppucci
 
 Switch at runtime with `:theme` (opens picker) or `:theme <name>`.
 
+### Adding Themes
+
+To add a custom theme just copy or create a theme as described below.
+Some pre-configured themes can be found at [themes/](https://github.com/onereallylongname/avedit/tree/main/themes). 
+
 ### Theme file format
 
 Create a `.json` file in your themes directory:
