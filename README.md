@@ -9,11 +9,15 @@
 ▒▒▒▒▒   ▒▒▒▒▒    ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒     ▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒      ▒▒▒▒▒▒▒▒ ▒▒▒▒▒
 ```
 
+| [Features](#features) | [Installation](#installation) | [Usage](#usage) | [Configuration](#configuration) | [Themes](#themes) | [For developers](#for-developers) |
+
 # avedit
 
 A terminal-based Avro schema editor inspired by lazygit. Navigate, edit, and manage `.avsc` schemas entirely from your terminal with vim-like keybindings, undo/redo, and live theme switching.
 
-## Why avedit?
+![intro_gif](docs/images/avedit_show.gif)
+
+## Features
 
 Working with Avro schemas in a text editor means juggling deeply nested JSON, remembering type syntax, and manually tracking named type references. avedit gives you:
 
@@ -21,45 +25,19 @@ Working with Avro schemas in a text editor means juggling deeply nested JSON, re
 - **Safe editing** — undo/redo everything, type pickers prevent typos
 - **Named type awareness** — rename a record and all references update automatically
 - **Zero setup** — single binary, no runtime dependencies
-
-![intro_gif](docs/images/avedit_show.gif)
-
-## Features
-
-- **Tree navigation** — expand, collapse, and browse complex schemas with depth indicators
+- [**Tree navigation**](#tree-normal-mode) — expand, collapse, and browse complex schemas with depth indicators
 - **Inline editing** — edit field names, types, docs, defaults, and custom attributes
 - **Structural mutations** — add, delete, copy, move fields; replace types
 - **Named type propagation** — renaming a type updates all references across the schema
 - **Undo/Redo** — full history stack (500 levels deep) with descriptions
-- **Search** — prefix filters (`n:`, `t:`, `p:`, `ns:`, `a:`) and fuzzy text matching
-- **File Explorer** — browse, filter, and open `.avsc` files with recursive search
-- **Commands** — vim-style `:w`, `:q`, `:wq`, `:export`, `:theme`, `:notifications`
-- **Themes** — JSON-based themes with runtime switching (ships with 10 themes)
+- [**Search**](#search-prefixes) — prefix filters (`n:`, `t:`, `p:`, `ns:`, `a:`) and fuzzy text matching
+- [**File Explorer**](explorer-normal-mode) — browse, filter, and open `.avsc` files with recursive search
+- [**Commands**](#command-mode) — vim-style `:w`, `:q`, `:wq`, `:export`, `:theme`, `:notifications`
+- [**Themes**](#themes) — JSON-based themes with runtime switching (ships with 10 themes)
 - **Categorized type picker** — types grouped by Primitives / Complex / Named / Aliases
 - **Notifications** — colored flash messages with scrollable history log
 - **Persistent history** — command and search history saved across sessions
-- **Config** — user preferences loaded from `~/.config/avedit/config.json`
-
-## Quick Start
-
-```bash
-# Open a schema file directly
-avedit schema.avsc
-
-# Browse a directory of schemas
-avedit ./schemas/
-
-# Open in current directory
-avedit
-```
-
-Once inside:
-1. Use `j`/`k` to navigate the tree, `h`/`l` to collapse/expand
-2. Press `Enter` to open the details panel for the selected node
-3. Press `e` or `Enter` on an attribute to edit it
-4. Press `a` to add a new field, `d` to delete
-5. Use `u` to undo, `Ctrl+R` to redo
-6. Type `:w` to save, `:q` to quit
+- [**Config**](#configuration) — user preferences loaded from `~/.config/avedit/config.json`
 
 ## Installation
 
@@ -80,6 +58,27 @@ avedit                  # opens explorer in CWD
 avedit --help
 avedit --version
 ```
+
+### Quick Start
+
+```bash
+# Open a schema file directly
+avedit schema.avsc
+
+# Browse a directory of schemas
+avedit ./schemas/
+
+# Open in current directory
+avedit
+```
+
+Once inside:
+1. Use `j`/`k` to navigate the tree, `h`/`l` to collapse/expand
+2. Press `Enter` to open the details panel for the selected node
+3. Press `e` or `Enter` on an attribute to edit it
+4. Press `a` to add a new field, `d` to delete
+5. Use `u` to undo, `Ctrl+R` to redo
+6. Type `:w` to save, `:q` to quit
 
 ## Keybindings
 
@@ -175,30 +174,16 @@ avedit --version
 | `:open <file>`    | Open schema file            |
 | `:notifications`  | Show notification history   |
 
-## How It Works
+## Tips & Tricks
 
-avedit uses a **projection model** architecture:
-
-```
-.avsc → Parse → Projection (flat node map) → Render UI
-                       ↑                          |
-                   Commands ←───────── User input (keys)
-                       |
-                       v
-               Projection → Emit → .avsc
-```
-
-- The schema is parsed into a flat map of nodes linked by parent/child IDs
-- Every edit creates a reversible Command (with Do/Undo closures)
-- Commands are pushed to a history stack enabling unlimited undo/redo
-- Export reconstructs valid Avro JSON by walking the tree
-
-This means:
-- Edits never corrupt the schema structure
-- Undo works perfectly for any operation (add, delete, move, rename, type change)
-- Named type renames propagate automatically to all references
-
-For full architecture details, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- **Named type references** — When you change a record/enum/fixed name, all fields referencing that type update automatically
+- **Type picker** — Press `/` inside the picker to filter by typing (case-insensitive)
+- **Multiline editing** — For `doc` fields, press `Ctrl+Enter` to add newlines
+- **Explorer search** — `/` in the explorer searches recursively through all subdirectories
+- **History** — Use `↑`/`↓` in search (`/`) and command (`:`) modes to browse previous entries
+- **Unsaved changes** — avedit prompts before quitting if you have unsaved edits
+- **Persistent config** — Theme choice is saved to `~/.config/avedit/config.json` automatically
+- **Multiple theme dirs** — Set `themes_dir` in config to load additional themes alongside built-ins
 
 ## Configuration
 
@@ -224,17 +209,13 @@ avedit reads configuration from `~/.config/avedit/config.json`:
 
 ## Themes
 
-Themes are JSON files. avedit ships with: `dark`, `light`, `monokai`, `catppuccin-mocha`, `tokyo-night`, `rose-pine`, `dracula`, `gruvbox`, `one-dark-pro`, `vscode-light`.
+Themes are JSON files. avedit ships with: `dark`, `light`, `monokai`, `catppuccin-mocha`, `tokyo-night`, `rose-pine`, `dracula`, `gruvbox`, `one-dark-pro`, `vscode-light` at [themes/](https://github.com/onereallylongname/avedit/tree/main/themes). 
 
 Switch at runtime with `:theme` (opens picker) or `:theme <name>`.
 
-### Adding Themes
-
-To add a custom theme just copy or create a theme as described below.
-Some pre-configured themes can be found at [themes/](https://github.com/onereallylongname/avedit/tree/main/themes). 
-
 ### Theme file format
 
+To add a custom theme just copy or create a theme as described below.
 Create a `.json` file in your themes directory:
 
 ```json
@@ -284,7 +265,7 @@ Create a `.json` file in your themes directory:
 
 > **Tip:** All colors are optional. Omitted values fall back to sensible defaults derived from the primary/secondary accent colors.
 
-## Setup example
+### Setup example
 
 ```bash
 # Create config directory
@@ -322,6 +303,14 @@ cat > ~/.config/avedit/themes/custom.json << 'EOF'
 EOF
 ```
 
+## License
+
+MIT
+
+---
+
+# For developers
+
 ## Architecture
 
 ```
@@ -338,19 +327,30 @@ internal/
 themes/                     Bundled theme JSON files
 docs/                       Architecture docs + plan
 ```
+## How It Works
+
+avedit uses a **projection model** architecture:
+
+```
+.avsc → Parse → Projection (flat node map) → Render UI
+                       ↑                          |
+                   Commands ←───────── User input (keys)
+                       |
+                       v
+               Projection → Emit → .avsc
+```
+
+- The schema is parsed into a flat map of nodes linked by parent/child IDs
+- Every edit creates a reversible Command (with Do/Undo closures)
+- Commands are pushed to a history stack enabling unlimited undo/redo
+- Export reconstructs valid Avro JSON by walking the tree
+
+This means:
+- Edits never corrupt the schema structure
+- Undo works perfectly for any operation (add, delete, move, rename, type change)
+- Named type renames propagate automatically to all references
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed design documentation.
-
-## Tips & Tricks
-
-- **Named type references** — When you change a record/enum/fixed name, all fields referencing that type update automatically
-- **Type picker** — Press `/` inside the picker to filter by typing (case-insensitive)
-- **Multiline editing** — For `doc` fields, press `Ctrl+Enter` to add newlines
-- **Explorer search** — `/` in the explorer searches recursively through all subdirectories
-- **History** — Use `↑`/`↓` in search (`/`) and command (`:`) modes to browse previous entries
-- **Unsaved changes** — avedit prompts before quitting if you have unsaved edits
-- **Persistent config** — Theme choice is saved to `~/.config/avedit/config.json` automatically
-- **Multiple theme dirs** — Set `themes_dir` in config to load additional themes alongside built-ins
 
 ## TODO
 
@@ -361,11 +361,5 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed design documenta
 scoop bucket add avedit https://github.com/onereallylongname/scoop-bucket
 scoop install avedit
 ```
-
-### Pre-built binaries
-
-Download from [Releases](https://github.com/onereallylongname/avro-schema-viz/releases).
-
-## License
-
-MIT
+- [ ] Pre-built binaries
+   - [ ] Download from [Releases](https://github.com/onereallylongname/avro-schema-viz/releases).
