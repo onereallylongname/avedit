@@ -31,7 +31,7 @@ Working with Avro schemas in a text editor means juggling deeply nested JSON, re
 - **Named type propagation** — renaming a type updates all references across the schema
 - **Undo/Redo** — full history stack (500 levels deep) with descriptions
 - [**Search**](#search-prefixes) — prefix filters (`n:`, `t:`, `p:`, `ns:`, `a:`) and fuzzy text matching
-- [**File Explorer**](explorer-normal-mode) — browse, filter, and open `.avsc` files with recursive search
+- [**File Explorer**](#explorer-normal-mode) — browse, filter, and open `.avsc` files with recursive search
 - [**Commands**](#command-mode) — vim-style `:w`, `:q`, `:wq`, `:export`, `:theme`, `:notifications`
 - [**Themes**](#themes) — JSON-based themes with runtime switching (ships with 10 themes)
 - **Categorized type picker** — types grouped by Primitives / Complex / Named / Aliases
