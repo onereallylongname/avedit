@@ -14,6 +14,7 @@
 # avedit
 
 A terminal-based Avro schema editor inspired by lazygit. Navigate, edit, and manage `.avsc` schemas entirely from your terminal with vim-like keybindings, undo/redo, and live theme switching.
+A port from [avro editor](https://github.com/onereallylongname/avro-editor-static-web), a static html site to render and edit avro schemas.
 
 ![intro_gif](docs/images/avedit_show.gif)
 
