@@ -141,12 +141,12 @@ graph TB
 ```mermaid
 stateDiagram-v2
     [*] --> Normal
-    Normal --> Edit : Enter on details / e
-    Normal --> Search : /
-    Normal --> Command : :
-    Edit --> Normal : Enter (commit) / Esc (cancel)
-    Search --> Normal : Esc / Enter (jump)
-    Command --> Normal : Enter (exec) / Esc (cancel)
+    Normal --> Edit : "Enter on details / e"
+    Normal --> Search : "/"
+    Normal --> Command : ":"
+    Edit --> Normal : "Enter (commit) / Esc (cancel)"
+    Search --> Normal : "Esc / Enter (jump)"
+    Command --> Normal : "Enter (exec) / Esc (cancel)"
 
     state Normal {
         [*] --> TreeFocus
