@@ -8,9 +8,43 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+// Symbols holds configurable Unicode characters used throughout the UI.
+// All fields are optional in theme JSON — omitted values use defaults.
+type Symbols struct {
+	Expanded     string // Tree expanded node (default: "▼")
+	Collapsed    string // Tree collapsed node (default: "▶")
+	Leaf         string // Tree leaf node (default: " ")
+	NamedRef     string // Named type reference badge (default: "→")
+	Cursor       string // Active item cursor in pickers/details (default: "▸")
+	DetailExpand string // Details expanded section (default: "▾")
+	Error        string // Error severity icon (default: "✗")
+	Warning      string // Warning severity icon (default: "⚠")
+	Success      string // Success/info icon (default: "✓")
+	ScrollUp     string // Scroll up hint (default: "↑more")
+	ScrollDown   string // Scroll down hint (default: "↓more")
+}
+
+// DefaultSymbols provides the standard symbol set.
+var DefaultSymbols = Symbols{
+	Expanded:     "▼",
+	Collapsed:    "▶",
+	Leaf:         " ",
+	NamedRef:     "→",
+	Cursor:       "▸",
+	DetailExpand: "▾",
+	Error:        "✗",
+	Warning:      "⚠",
+	Success:      "✓",
+	ScrollUp:     "↑more",
+	ScrollDown:   "↓more",
+}
+
 // Theme holds all lipgloss styles used across the UI.
 type Theme struct {
 	Name string
+
+	// Configurable symbols
+	Sym Symbols
 
 	// Base colors
 	Fg    color.Color
@@ -62,18 +96,4 @@ type Theme struct {
 	StatusEdit    lipgloss.Style
 	StatusSearch  lipgloss.Style
 	StatusCommand lipgloss.Style
-}
-
-// ExpanderChars defines the characters used for tree expand/collapse indicators.
-type ExpanderChars struct {
-	Expanded  string
-	Collapsed string
-	Leaf      string
-}
-
-// DefaultExpanders provides the standard tree expander characters.
-var DefaultExpanders = ExpanderChars{
-	Expanded:  "▼",
-	Collapsed: "▶",
-	Leaf:      " ",
 }

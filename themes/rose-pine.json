@@ -16,5 +16,9 @@
   "badge_map": "#31748f",
   "badge_union": "#ebbcba",
   "badge_fixed": "#908caa",
-  "status_bg": "#1f1d2e"
+  "status_bg": "#1f1d2e",
+  "mode_normal": "#61afef",
+  "mode_edit": "#98c379",
+  "mode_search": "#e5c07b",
+  "mode_command": "#c678dd"
 }

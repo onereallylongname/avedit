@@ -34,11 +34,15 @@ Working with Avro schemas in a text editor means juggling deeply nested JSON, re
 - [**Search**](#search-prefixes) — prefix filters (`n:`, `t:`, `p:`, `ns:`, `a:`) and fuzzy text matching
 - [**File Explorer**](#explorer-normal-mode) — browse, filter, and open `.avsc` files with recursive search
 - [**Commands**](#command-mode) — vim-style `:w`, `:q`, `:wq`, `:export`, `:theme`, `:notifications`
+- [**Diagnostics**](#diagnostics) — `:problems` / `:diagnostics` shows validation errors in a navigable picker
+- [**Logging**](#logging) — structured logging with rotation, configurable level (CLI flag or runtime `:log-level`)
 - [**Themes**](#themes) — JSON-based themes with runtime switching (ships with 10 themes)
+- [**Symbols**](#symbols) — all UI icons are theme-configurable (expanders, cursors, status icons)
 - **Categorized type picker** — types grouped by Primitives / Complex / Named / Aliases
 - **Notifications** — colored flash messages with scrollable history log
 - **Persistent history** — command and search history saved across sessions
 - [**Config**](#configuration) — user preferences loaded from `~/.config/avedit/config.json`
+- Diagnostics - `:problems` or `:diagnostics` to list all the validation warning and errors
 
 ## Installation
 
@@ -56,6 +60,7 @@ _**Note**: Add the go installation path to you $PATH_
 avedit <schema.avsc>
 avedit <directory>
 avedit                  # opens explorer in CWD
+avedit --log-level debug ./schemas/
 avedit --help
 avedit --version
 ```
@@ -74,6 +79,7 @@ avedit
 ```
 
 Once inside:
+
 1. Use `j`/`k` to navigate the tree, `h`/`l` to collapse/expand
 2. Press `Enter` to open the details panel for the selected node
 3. Press `e` or `Enter` on an attribute to edit it
@@ -85,95 +91,99 @@ Once inside:
 
 ### Global
 
-| Key       | Action              |
-|-----------|---------------------|
-| `q`       | Quit                |
-| `?`       | Show help overlay   |
-| `Tab`     | Switch panel focus  |
+| Key         | Action               |
+| ----------- | -------------------- |
+| `q`         | Quit                 |
+| `?`         | Show help overlay    |
+| `Tab`       | Switch panel focus   |
 | `1`/`2`/`3` | Focus panel directly |
-| `Ctrl+E`  | Toggle file explorer |
-| `Esc`     | Cancel / exit mode  |
-| `Ctrl+S`  | Save                |
+| `Ctrl+E`    | Toggle file explorer |
+| `Esc`       | Cancel / exit mode   |
+| `Ctrl+S`    | Save                 |
 
 ### Tree (Normal Mode)
 
-| Key       | Action                |
-|-----------|-----------------------|
-| `j`/`k`   | Navigate up/down      |
-| `h`/`l`   | Collapse/expand node  |
-| `g`/`G`   | Jump to top/bottom    |
-| `Space`   | Toggle expand         |
-| `Enter`   | Focus details pane    |
-| `a`       | Add field             |
-| `d`       | Delete node           |
-| `c`       | Copy node             |
-| `m`       | Move to record        |
-| `u`       | Undo                  |
-| `Ctrl+R`  | Redo                  |
-| `/`       | Search                |
+| Key      | Action               |
+| -------- | -------------------- |
+| `j`/`k`  | Navigate up/down     |
+| `h`/`l`  | Collapse/expand node |
+| `g`/`G`  | Jump to top/bottom   |
+| `Space`  | Toggle expand        |
+| `Enter`  | Focus details pane   |
+| `a`      | Add field            |
+| `d`      | Delete node          |
+| `c`      | Copy node            |
+| `m`      | Move to record       |
+| `u`      | Undo                 |
+| `Ctrl+R` | Redo                 |
+| `/`      | Search               |
 
 ### Explorer (Normal Mode)
 
-| Key            | Action                    |
-|----------------|---------------------------|
-| `j`/`k`        | Navigate up/down          |
-| `h`/`l`        | Collapse/expand dir       |
-| `Enter`/`Space`| Open file / toggle dir    |
-| `g`/`G`        | Jump to top/bottom        |
-| `Backspace`/`-`| Navigate to parent dir    |
-| `.`            | Set selected dir as root  |
-| `/`            | Search files (recursive)  |
+| Key             | Action                   |
+| --------------- | ------------------------ |
+| `j`/`k`         | Navigate up/down         |
+| `h`/`l`         | Collapse/expand dir      |
+| `Enter`/`Space` | Open file / toggle dir   |
+| `g`/`G`         | Jump to top/bottom       |
+| `Backspace`/`-` | Navigate to parent dir   |
+| `.`             | Set selected dir as root |
+| `/`             | Search files (recursive) |
 
 ### Details (Normal Mode)
 
-| Key       | Action                    |
-|-----------|---------------------------|
-| `j`/`k`   | Navigate attributes       |
-| `Enter`/`e` | Edit attribute          |
-| `a`       | Add custom attribute      |
-| `d`       | Delete attribute          |
-| `R`       | Rename custom attr key    |
+| Key         | Action                 |
+| ----------- | ---------------------- |
+| `j`/`k`     | Navigate attributes    |
+| `Enter`/`e` | Edit attribute         |
+| `a`         | Add custom attribute   |
+| `d`         | Delete attribute       |
+| `R`         | Rename custom attr key |
 
 ### Edit Mode
 
-| Key            | Action                        |
-|----------------|-------------------------------|
-| `Enter`        | Confirm edit                  |
-| `Esc`          | Cancel edit                   |
-| `Shift+Enter`  | Newline (multiline fields)    |
+| Key           | Action                     |
+| ------------- | -------------------------- |
+| `Enter`       | Confirm edit               |
+| `Esc`         | Cancel edit                |
+| `Shift+Enter` | Newline (multiline fields) |
 
 ### Search Mode
 
-| Key    | Action              |
-|--------|---------------------|
-| `/`    | Open search         |
-| `Enter`| Jump to match       |
-| `n`/`N`| Next/prev match     |
-| `Esc`  | Close search        |
+| Key     | Action          |
+| ------- | --------------- |
+| `/`     | Open search     |
+| `Enter` | Jump to match   |
+| `n`/`N` | Next/prev match |
+| `Esc`   | Close search    |
 
 ### Search Prefixes
 
-| Prefix | Filters by           | Example          |
-|--------|----------------------|------------------|
-| `n:`   | Field/record name    | `n:order`        |
-| `t:`   | Type                 | `t:record`       |
-| `p:`   | Parent name          | `p:Customer`     |
-| `ns:`  | Namespace            | `ns:com.payment` |
-| `a:`   | Alias                | `a:OrderEvent`   |
-| (none) | Free text (all fields) | `timestamp`    |
+| Prefix | Filters by             | Example          |
+| ------ | ---------------------- | ---------------- |
+| `n:`   | Field/record name      | `n:order`        |
+| `t:`   | Type                   | `t:record`       |
+| `p:`   | Parent name            | `p:Customer`     |
+| `ns:`  | Namespace              | `ns:com.payment` |
+| `a:`   | Alias                  | `a:OrderEvent`   |
+| (none) | Free text (all fields) | `timestamp`      |
 
 ### Command Mode
 
-| Command           | Action                      |
-|-------------------|-----------------------------|
-| `:w [file]`       | Save (optionally to file)   |
-| `:q`              | Quit                        |
-| `:q!`             | Force quit (no save prompt) |
-| `:wq`             | Save and quit               |
-| `:export [file]`  | Export .avsc                 |
-| `:theme [name]`   | Switch theme (picker if no name) |
-| `:open <file>`    | Open schema file            |
-| `:notifications`  | Show notification history   |
+| Command            | Action                           |
+| ------------------ | -------------------------------- |
+| `:w [file]`        | Save (optionally to file)        |
+| `:q`               | Quit                             |
+| `:q!`              | Force quit (no save prompt)      |
+| `:wq`              | Save and quit                    |
+| `:export [file]`   | Export .avsc                     |
+| `:theme [name]`    | Switch theme (picker if no name) |
+| `:open <file>`     | Open schema file                 |
+| `:validate`        | Run schema validation            |
+| `:problems`        | Show diagnostics picker          |
+| `:diagnostics`     | Alias for `:problems`            |
+| `:log-level [lvl]` | Set log level (picker if no arg) |
+| `:notifications`   | Show notification history        |
 
 ## Tips & Tricks
 
@@ -185,6 +195,46 @@ Once inside:
 - **Unsaved changes** — avedit prompts before quitting if you have unsaved edits
 - **Persistent config** — Theme choice is saved to `~/.config/avedit/config.json` automatically
 - **Multiple theme dirs** — Set `themes_dir` in config to load additional themes alongside built-ins
+- **Diagnostics** — Use the command `:diagnostics` to list diagnostics, press enter on any to focus on the field at fault
+
+## Diagnostics
+
+avedit performs advisory validation on every schema mutation:
+
+- **`:validate`** — manually trigger validation, shows error/warning summary
+- **`:problems`** / **`:diagnostics`** — opens a navigable picker listing all issues
+  - Errors (✗) sort first, then warnings (⚠)
+  - Each item shows the affected node's name and path
+  - Selecting an issue jumps to that node in the tree
+- Validation is **advisory only** — it never blocks operations
+
+### Validation rules
+
+| Category   | Checks                                   |
+| ---------- | ---------------------------------------- |
+| Naming     | Duplicate field names within a record    |
+| Types      | Duplicate branches in a union            |
+| Required   | Missing required fields (`name`, `type`) |
+| References | Named type reference validity            |
+
+## Logging
+
+avedit writes structured logs to `~/.config/avedit/log/avedit.log`:
+
+- **Rotation**: 10 MB max file size
+- **Format**: JSON-structured slog output with timestamps
+- **Level**: Controlled via config (`log_level`) or CLI (`--log-level`)
+
+```bash
+# Run with debug logging
+avedit --log-level debug schema.avsc
+
+# Change level at runtime
+:log-level         # opens picker (debug/info/warn/error)
+:log-level debug   # set directly
+```
+
+All internal errors (save/open/edit/delete/copy/move failures) are logged with structured context (file paths, node IDs, error details) for easy debugging.
 
 ## Configuration
 
@@ -193,14 +243,16 @@ avedit reads configuration from `~/.config/avedit/config.json`:
 ```json
 {
   "theme": "catppuccin-mocha",
-  "themes_dir": ""
+  "themes_dir": "",
+  "log_level": "error"
 }
 ```
 
-| Field        | Description                                          | Default  |
-|--------------|------------------------------------------------------|----------|
-| `theme`      | Default theme to load on startup                     | `"dark"` |
-| `themes_dir` | Custom directory for additional theme files (optional) | `""`     |
+| Field        | Description                                            | Default   |
+| ------------ | ------------------------------------------------------ | --------- |
+| `theme`      | Default theme to load on startup                       | `"dark"`  |
+| `themes_dir` | Custom directory for additional theme files (optional) | `""`      |
+| `log_level`  | Log verbosity: `debug`, `info`, `warn`, `error`        | `"error"` |
 
 ### Theme discovery order
 
@@ -210,7 +262,7 @@ avedit reads configuration from `~/.config/avedit/config.json`:
 
 ## Themes
 
-Themes are JSON files. avedit ships with: `dark`, `light`, `monokai`, `catppuccin-mocha`, `tokyo-night`, `rose-pine`, `dracula`, `gruvbox`, `one-dark-pro`, `vscode-light` at [themes/](https://github.com/onereallylongname/avedit/tree/main/themes). 
+Themes are JSON files. avedit ships with: `dark`, `light`, `monokai`, `catppuccin-mocha`, `tokyo-night`, `rose-pine`, `dracula`, `gruvbox`, `one-dark-pro`, `vscode-light` at [themes/](https://github.com/onereallylongname/avedit/tree/main/themes).
 
 Switch at runtime with `:theme` (opens picker) or `:theme <name>`.
 
@@ -243,28 +295,68 @@ Create a `.json` file in your themes directory:
 }
 ```
 
-| Color           | Purpose                             |
-|-----------------|-------------------------------------|
-| `fg`            | Primary text foreground             |
-| `bg`            | Main background                     |
-| `dim`           | Subdued text (guides, primitives)   |
-| `muted`         | Very subdued (borders, separators)  |
-| `primary`       | Accent (focus, active items)        |
-| `secondary`     | Secondary accent (headings, enums)  |
-| `success`       | Positive indicators (fields, edit mode) |
-| `warning`       | Warning indicators (arrays, search mode) |
-| `error`         | Error indicators (flash errors)     |
-| `badge_record`  | Record node type color              |
-| `badge_field`   | Field node type color               |
-| `badge_enum`    | Enum node type color                |
-| `badge_array`   | Array node type color               |
-| `badge_map`     | Map node type color                 |
-| `badge_union`   | Union node type color               |
-| `badge_fixed`   | Fixed node type color               |
-| `badge_named`   | Named reference type color          |
-| `status_bg`     | Status bar background               |
+| Color          | Purpose                                  |
+| -------------- | ---------------------------------------- |
+| `fg`           | Primary text foreground                  |
+| `bg`           | Main background                          |
+| `dim`          | Subdued text (guides, primitives)        |
+| `muted`        | Very subdued (borders, separators)       |
+| `primary`      | Accent (focus, active items)             |
+| `secondary`    | Secondary accent (headings, enums)       |
+| `success`      | Positive indicators (fields, edit mode)  |
+| `warning`      | Warning indicators (arrays, search mode) |
+| `error`        | Error indicators (flash errors)          |
+| `badge_record` | Record node type color                   |
+| `badge_field`  | Field node type color                    |
+| `badge_enum`   | Enum node type color                     |
+| `badge_array`  | Array node type color                    |
+| `badge_map`    | Map node type color                      |
+| `badge_union`  | Union node type color                    |
+| `badge_fixed`  | Fixed node type color                    |
+| `badge_named`  | Named reference type color               |
+| `status_bg`    | Status bar background                    |
 
 > **Tip:** All colors are optional. Omitted values fall back to sensible defaults derived from the primary/secondary accent colors.
+
+### Symbols
+
+Themes can override all UI symbols. Add a `"symbols"` section (all fields optional — defaults used for omitted values):
+
+```json
+{
+  "name": "my-theme",
+  "fg": "#c0caf5",
+  "symbols": {
+    "expanded": "▼",
+    "collapsed": "▶",
+    "leaf": "·",
+    "named_ref": "→",
+    "cursor": "▸",
+    "detail_expand": "▾",
+    "error": "✗",
+    "warning": "⚠",
+    "success": "✓",
+    "scroll_up": "▲",
+    "scroll_down": "▼"
+  }
+}
+```
+
+| Symbol          | Default | Purpose                        |
+| --------------- | ------- | ------------------------------ |
+| `expanded`      | `▼`     | Tree node expanded marker      |
+| `collapsed`     | `▶`     | Tree node collapsed marker     |
+| `leaf`          | `·`     | Tree leaf node marker          |
+| `named_ref`     | `→`     | Named type reference badge     |
+| `cursor`        | `▸`     | Picker/detail selection cursor |
+| `detail_expand` | `▾`     | Detail section expanded marker |
+| `error`         | `✗`     | Error indicator                |
+| `warning`       | `⚠`     | Warning indicator              |
+| `success`       | `✓`     | Success indicator              |
+| `scroll_up`     | `▲`     | Scroll up hint                 |
+| `scroll_down`   | `▼`     | Scroll down hint               |
+
+> **Example**: The gruvbox theme uses ASCII symbols (`v`, `>`, `x`, `!`) for terminal compatibility.
 
 ### Setup example
 
@@ -300,6 +392,19 @@ cat > ~/.config/avedit/themes/custom.json << 'EOF'
   "badge_union": "#ce9178",
   "badge_fixed": "#9cdcfe",
   "status_bg": "#252526"
+  "symbols": {
+    "expanded": "▼",
+    "collapsed": "▶",
+    "leaf": "·",
+    "named_ref": "→",
+    "cursor": "▸",
+    "detail_expand": "▾",
+    "error": "✗",
+    "warning": "⚠",
+    "success": "✓",
+    "scroll_up": "▲",
+    "scroll_down": "▼"
+  }
 }
 EOF
 ```
@@ -318,16 +423,19 @@ MIT
 cmd/avedit/main.go          Entry point + CLI flags
 internal/
   config/                   User configuration + persistent history
+  logging/                  Structured logging (slog + lumberjack rotation)
   model/                    Bubbletea TUI models (app, tree, details, explorer, picker)
   projection/               Core schema tree (nodes, build, emit, clone, stats)
   command/                  Undo/redo mutation commands (create, remove, move, copy, replace, rename)
   search/                   Query engine (prefix filters, fuzzy scoring)
   schema/                   Avro type system constants (kinds, slots, templates)
   io/                       File load/export + clipboard
-  theme/                    Theme system (JSON loader, registry, defaults)
+  theme/                    Theme system (JSON loader, registry, defaults, symbols)
+  validation/               Advisory schema validation (duplicate names, unions)
 themes/                     Bundled theme JSON files
 docs/                       Architecture docs + plan
 ```
+
 ## How It Works
 
 avedit uses a **projection model** architecture:
@@ -347,6 +455,7 @@ avedit uses a **projection model** architecture:
 - Export reconstructs valid Avro JSON by walking the tree
 
 This means:
+
 - Edits never corrupt the schema structure
 - Undo works perfectly for any operation (add, delete, move, rename, type change)
 - Named type renames propagate automatically to all references
@@ -355,12 +464,14 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed design documenta
 
 ## TODO
 
-- [ ] Packaging 
-   - [ ] Homebrew (macOS/Linux) `brew install onereallylongname/tap/avedit`
-   - [ ] Scoop (Windows)
+- [ ] Packaging
+  - [ ] Homebrew (macOS/Linux) `brew install onereallylongname/tap/avedit`
+  - [ ] Scoop (Windows)
+
 ```powershell
 scoop bucket add avedit https://github.com/onereallylongname/scoop-bucket
 scoop install avedit
 ```
+
 - [ ] Pre-built binaries
-   - [ ] Download from [Releases](https://github.com/onereallylongname/avro-schema-viz/releases).
+  - [ ] Download from [Releases](https://github.com/onereallylongname/avro-schema-viz/releases).

@@ -19,6 +19,7 @@ package model
 import (
 	"fmt"
 	"image/color"
+	"log/slog"
 	"path/filepath"
 	"strings"
 
@@ -28,10 +29,12 @@ import (
 	"github.com/onereallylongname/avedit/internal/command"
 	"github.com/onereallylongname/avedit/internal/config"
 	"github.com/onereallylongname/avedit/internal/io"
+	"github.com/onereallylongname/avedit/internal/logging"
 	"github.com/onereallylongname/avedit/internal/projection"
 	"github.com/onereallylongname/avedit/internal/schema"
 	"github.com/onereallylongname/avedit/internal/search"
 	"github.com/onereallylongname/avedit/internal/theme"
+	"github.com/onereallylongname/avedit/internal/validation"
 )
 
 // AppMode represents the current input mode.
@@ -93,6 +96,8 @@ const (
 	ActionSelectTheme OverlayAction = iota
 	ActionLoad        OverlayAction = iota
 	ActionQuit        OverlayAction = iota
+	ActionSetLogLevel OverlayAction = iota
+	ActionShowProblems OverlayAction = iota
 )
 
 // FlashLevel determines the visual style of a flash message.
@@ -150,6 +155,9 @@ type App struct {
 	// Move state (maps picker display name → node ID)
 	moveTargets map[string]string
 
+	// Problems state (maps picker display name → node ID)
+	problemsMap map[string]string
+
 	// Pending file to open (for confirm-on-load-if-unsaved flow)
 	pendingFile string
 
@@ -171,6 +179,10 @@ type App struct {
 	// Theme
 	theme    *theme.Theme
 	themeReg *theme.Registry
+
+	// Validation (advisory, never blocks mutations)
+	validator        *validation.Analyzer
+	validationIssues []validation.Issue
 }
 
 // NewApp creates a new root App model from a loaded projection.
@@ -203,8 +215,9 @@ func NewApp(proj *projection.Projection, filePath string, cfg config.Config) App
 	details := NewDetailsModel(proj, th)
 	explorer := NewExplorerModel(th, filepath.Dir(filePath))
 	statusbar := NewStatusBarModel(th, filePath)
+	v := validation.NewAnalyzer()
 
-	return App{
+	app := App{
 		proj:          proj,
 		history:       hist,
 		filePath:      filePath,
@@ -218,7 +231,10 @@ func NewApp(proj *projection.Projection, filePath string, cfg config.Config) App
 		themeReg:      reg,
 		cmdHistory:    persisted.Commands,
 		searchHistory: persisted.Searches,
+		validator:     v,
 	}
+	app.runValidation()
+	return app
 }
 
 // NewAppExplorer creates an App in directory-browsing mode (no file loaded).
@@ -260,6 +276,7 @@ func NewAppExplorer(dir string, cfg config.Config) App {
 		themeReg:      reg,
 		cmdHistory:    persisted.Commands,
 		searchHistory: persisted.Searches,
+		validator:     validation.NewAnalyzer(),
 	}
 }
 
@@ -392,7 +409,7 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if a.mode == ModeNormal {
 				if a.history.CanRedo() {
 					_ = a.history.Redo()
-					a.dirty = true
+					a.markDirty()
 					a.tree.rebuildLines()
 					a.syncDetailsToTree()
 				}
@@ -647,7 +664,7 @@ func (a App) updateCommand(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 }
 
 // knownCommands lists all available command names for tab completion.
-var knownCommands = []string{"w", "q", "q!", "wq", "export", "theme", "open", "e", "notifications", "notify"}
+var knownCommands = []string{"w", "q", "q!", "wq", "export", "theme", "open", "e", "notifications", "notify", "validate", "log-level", "problems", "diagnostics"}
 
 // completeCommand attempts to autocomplete the current command buffer.
 func (a *App) completeCommand() {
@@ -752,6 +769,40 @@ func (a App) executeCommand(raw string) (tea.Model, tea.Cmd) {
 		a.overlay = OverlayNotify
 		a.notifyScrl = 0
 		return a, nil
+	case "validate":
+		a.runValidation()
+		errs := validation.ErrorCount(a.validationIssues)
+		warns := validation.WarningCount(a.validationIssues)
+		if errs == 0 && warns == 0 {
+			a.flashInfo("Schema valid " + a.theme.Sym.Success)
+		} else {
+			a.flashWarn(fmt.Sprintf("Validation: %d errors, %d warnings", errs, warns))
+		}
+		return a, nil
+	case "log-level":
+		if len(args) == 0 {
+			levels := []string{"debug", "info", "warn", "error"}
+			a.picker = NewPicker("Select log level", levels, a.theme)
+			a.overlay = OverlayPicker
+			a.overlayAction = ActionSetLogLevel
+			return a, nil
+		}
+		lvl := logging.ParseLevel(args[0])
+		logging.SetLevel(lvl)
+		a.flashInfo("Log level set to: " + logging.LevelName(lvl))
+		return a, nil
+	case "problems", "diagnostics":
+		a.runValidation()
+		if len(a.validationIssues) == 0 {
+			a.flashInfo("No problems found " + a.theme.Sym.Success)
+			return a, nil
+		}
+		items, pmap := a.buildProblemsPickerItems()
+		a.problemsMap = pmap
+		a.picker = NewPicker("Problems", items, a.theme)
+		a.overlay = OverlayPicker
+		a.overlayAction = ActionShowProblems
+		return a, nil
 	default:
 		a.flashError("Unknown command: :" + raw)
 	}
@@ -765,7 +816,7 @@ func (a App) doSave() (tea.Model, tea.Cmd) {
 		return a, nil
 	}
 	if err := io.ExportAvroToFile(a.proj, a.filePath); err != nil {
-		a.flashError("Save failed: " + err.Error())
+		a.flashError("Save failed: "+err.Error(), "path", a.filePath, "error", err)
 		return a, nil
 	}
 	a.dirty = false
@@ -781,7 +832,7 @@ func (a App) doSaveAs(path string) (tea.Model, tea.Cmd) {
 		path = filepath.Join(a.explorer.RootDir(), path)
 	}
 	if err := io.ExportAvroToFile(a.proj, path); err != nil {
-		a.flashError("Save failed: " + err.Error())
+		a.flashError("Save failed: "+err.Error(), "path", path, "error", err)
 		return a, nil
 	}
 	a.filePath = path
@@ -811,7 +862,7 @@ func (a App) updateTree(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		case "u":
 			if a.history.CanUndo() {
 				_ = a.history.Undo()
-				a.dirty = true
+				a.markDirty()
 				a.tree.rebuildLines()
 				a.syncDetailsToTree()
 			}
@@ -866,7 +917,7 @@ func (a App) updateExplorer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 func (a App) openFile(path string) (tea.Model, tea.Cmd) {
 	proj, _, err := io.LoadAvroFromFile(path)
 	if err != nil {
-		a.flashError("Open failed: " + err.Error())
+		a.flashError("Open failed: "+err.Error(), "path", path, "error", err)
 		return a, nil
 	}
 	a.proj = proj
@@ -878,6 +929,7 @@ func (a App) openFile(path string) (tea.Model, tea.Cmd) {
 	a.statusbar.SetFile(path)
 	a.focus = PanelTree
 	a.updateLayout()
+	a.runValidation()
 	a.flashInfo("Opened: " + filepath.Base(path))
 	return a, nil
 }
@@ -1051,12 +1103,12 @@ func (a App) commitDetailEdit() (tea.Model, tea.Cmd) {
 
 	if err != nil || cmd == nil {
 		if err != nil {
-			a.flashError("Edit failed: " + err.Error())
+			a.flashError("Edit failed: "+err.Error(), "node", node.ID, "error", err)
 		}
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.details.rebuildAttrs()
 	a.tree.rebuildLines()
 	return a, nil
@@ -1170,11 +1222,11 @@ func (a App) actionDelete() (tea.Model, tea.Cmd) {
 	}
 	cmd, err := command.RemoveNode(a.proj, command.RemoveNodeParams{NodeID: sel.ID})
 	if err != nil {
-		a.flashError("Delete failed: " + err.Error())
+		a.flashError("Delete failed: "+err.Error(), "node", sel.ID, "error", err)
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.tree.rebuildLines()
 	a.syncDetailsToTree()
 	return a, nil
@@ -1211,11 +1263,11 @@ func (a App) actionAddCustomAttr() (tea.Model, tea.Cmd) {
 		NewValue: "",
 	})
 	if err != nil {
-		a.flashError("Add attribute failed: " + err.Error())
+		a.flashError("Add attribute failed: "+err.Error(), "node", node.ID, "key", key, "error", err)
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.details.rebuildAttrs()
 	// Move cursor to the new attribute (last one)
 	a.details.cursor = len(a.details.attrs) - 1
@@ -1277,7 +1329,7 @@ func (a App) actionDeleteAttr() (tea.Model, tea.Cmd) {
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.details.rebuildAttrs()
 	if a.details.cursor >= len(a.details.attrs) && a.details.cursor > 0 {
 		a.details.cursor--
@@ -1306,11 +1358,11 @@ func (a App) actionCopy() (tea.Model, tea.Cmd) {
 		Index:    -1,
 	})
 	if err != nil {
-		a.flashError("Copy failed: " + err.Error())
+		a.flashError("Copy failed: "+err.Error(), "source", sel.ID, "target", parent.ID, "error", err)
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.tree.rebuildLines()
 	a.syncDetailsToTree()
 	return a, nil
@@ -1431,7 +1483,7 @@ func (a App) handlePickerResult(sel string) (tea.Model, tea.Cmd) {
 				Desc:   fmt.Sprintf("Set logicalType=%s", sel),
 			}
 			_ = a.history.Execute(cmd)
-			a.dirty = true
+			a.markDirty()
 			a.details.rebuildAttrs()
 			return a, nil
 		}
@@ -1445,7 +1497,7 @@ func (a App) handlePickerResult(sel string) (tea.Model, tea.Cmd) {
 		})
 		if err == nil {
 			_ = a.history.Execute(cmd)
-			a.dirty = true
+			a.markDirty()
 			a.details.rebuildAttrs()
 		}
 		return a, nil
@@ -1465,11 +1517,11 @@ func (a App) handlePickerResult(sel string) (tea.Model, tea.Cmd) {
 			Index:    -1,
 		})
 		if err != nil {
-			a.flashError("Move failed: " + err.Error())
+			a.flashError("Move failed: "+err.Error(), "node", selNode.ID, "target", targetID, "error", err)
 			return a, nil
 		}
 		_ = a.history.Execute(cmd)
-		a.dirty = true
+		a.markDirty()
 		a.tree.rebuildLines()
 		a.syncDetailsToTree()
 		return a, nil
@@ -1481,6 +1533,22 @@ func (a App) handlePickerResult(sel string) (tea.Model, tea.Cmd) {
 		}
 		a.applyTheme(t)
 		a.flashInfo("Theme: " + t.Name)
+		return a, nil
+
+	case ActionSetLogLevel:
+		lvl := logging.ParseLevel(sel)
+		logging.SetLevel(lvl)
+		a.flashInfo("Log level set to: " + logging.LevelName(lvl))
+		return a, nil
+
+	case ActionShowProblems:
+		nodeID, ok := a.problemsMap[sel]
+		if !ok || nodeID == "" {
+			return a, nil
+		}
+		a.tree.JumpToNode(nodeID)
+		a.syncDetailsToTree()
+		a.focus = PanelTree
 		return a, nil
 	}
 	return a, nil
@@ -1519,11 +1587,11 @@ func (a App) doAddField(target *projection.Node, typeName string) (tea.Model, te
 			Index:      -1,
 		})
 		if err != nil {
-			a.flashError("Add field failed: " + err.Error())
+			a.flashError("Add field failed: "+err.Error(), "target", target.ID, "type", typeName, "error", err)
 			return a, nil
 		}
 		_ = a.history.Execute(cmd)
-		a.dirty = true
+		a.markDirty()
 		a.tree.rebuildLines()
 		a.syncDetailsToTree()
 
@@ -1542,11 +1610,11 @@ func (a App) doAddField(target *projection.Node, typeName string) (tea.Model, te
 			Index:      -1,
 		})
 		if err != nil {
-			a.flashError("Add branch failed: " + err.Error())
+			a.flashError("Add branch failed: "+err.Error(), "target", target.ID, "type", typeName, "error", err)
 			return a, nil
 		}
 		_ = a.history.Execute(cmd)
-		a.dirty = true
+		a.markDirty()
 		a.tree.rebuildLines()
 		a.syncDetailsToTree()
 	}
@@ -1567,11 +1635,11 @@ func (a App) doReplaceType(target *projection.Node, typeName string) (tea.Model,
 		NewSubtree: cloneResult,
 	})
 	if err != nil {
-		a.flashError("Replace type failed: " + err.Error())
+		a.flashError("Replace type failed: "+err.Error(), "target", target.ID, "type", typeName, "error", err)
 		return a, nil
 	}
 	_ = a.history.Execute(cmd)
-	a.dirty = true
+	a.markDirty()
 	a.tree.rebuildLines()
 	a.syncDetailsToTree()
 	return a, nil
@@ -1587,11 +1655,11 @@ func (a App) handleConfirmResult() (tea.Model, tea.Cmd) {
 		}
 		cmd, err := command.RemoveNode(a.proj, command.RemoveNodeParams{NodeID: sel.ID})
 		if err != nil {
-			a.flashError("Delete failed: " + err.Error())
+			a.flashError("Delete failed: "+err.Error(), "node", sel.ID, "error", err)
 			return a, nil
 		}
 		_ = a.history.Execute(cmd)
-		a.dirty = true
+		a.markDirty()
 		a.tree.rebuildLines()
 		a.syncDetailsToTree()
 	case ActionLoad:
@@ -1688,7 +1756,14 @@ func (a App) View() tea.View {
 		a.statusbar.SetNodePath("")
 	}
 
-	a.statusbar.SetStats(fmt.Sprintf("%d fields, depth %d", stats.FieldCount, stats.MaxDepth))
+	statsText := fmt.Sprintf("%d fields, depth %d", stats.FieldCount, stats.MaxDepth)
+	if errs := validation.ErrorCount(a.validationIssues); errs > 0 {
+		statsText += fmt.Sprintf(" %s%d", a.theme.Sym.Error, errs)
+	}
+	if warns := validation.WarningCount(a.validationIssues); warns > 0 {
+		statsText += fmt.Sprintf(" %s%d", a.theme.Sym.Warning, warns)
+	}
+	a.statusbar.SetStats(statsText)
 	a.statusbar.SetUndo(a.history.UndoCount(), a.history.RedoCount())
 
 	// Render panels with appropriate border styles
@@ -1860,10 +1935,10 @@ func (a App) renderOverlay() string {
 		dimStyle := lipgloss.NewStyle().Foreground(a.theme.Muted).Italic(true)
 		hint := "  esc/? close  j/k scroll"
 		if a.helpScroll > 0 {
-			hint += "  ↑more"
+			hint += "  " + a.theme.Sym.ScrollUp
 		}
 		if a.helpScroll < maxScroll {
-			hint += "  ↓more"
+			hint += "  " + a.theme.Sym.ScrollDown
 		}
 		visible = append(visible, "", dimStyle.Render(hint))
 		overlayContent = strings.Join(visible, "\n")
@@ -1881,13 +1956,13 @@ func (a App) renderOverlay() string {
 				var clr color.Color
 				switch entry.Level {
 				case FlashError:
-					prefix = "✗ "
+					prefix = a.theme.Sym.Error + " "
 					clr = a.theme.Error
 				case FlashWarning:
-					prefix = "⚠ "
+					prefix = a.theme.Sym.Warning + " "
 					clr = a.theme.Warning
 				default:
-					prefix = "✓ "
+					prefix = a.theme.Sym.Success + " "
 					clr = a.theme.Success
 				}
 				line := lipgloss.NewStyle().Foreground(clr).Render(prefix + entry.Message)
@@ -1913,10 +1988,10 @@ func (a App) renderOverlay() string {
 		dimStyle := lipgloss.NewStyle().Foreground(a.theme.Muted).Italic(true)
 		hint := "  esc close  j/k scroll"
 		if a.notifyScrl > 0 {
-			hint += "  ↑more"
+			hint += "  " + a.theme.Sym.ScrollUp
 		}
 		if a.notifyScrl < maxScroll {
-			hint += "  ↓more"
+			hint += "  " + a.theme.Sym.ScrollDown
 		}
 		visible = append(visible, "", dimStyle.Render(hint))
 		overlayContent = strings.Join(visible, "\n")
@@ -2008,8 +2083,81 @@ func (a *App) setFlash(msg string, level FlashLevel) {
 	}
 }
 
-func (a *App) flashInfo(msg string)  { a.setFlash(msg, FlashInfo) }
-func (a *App) flashError(msg string) { a.setFlash(msg, FlashError) }
+func (a *App) flashInfo(msg string) {
+	a.setFlash(msg, FlashInfo)
+	slog.Info(msg)
+}
+
+func (a *App) flashWarn(msg string, logCtx ...any) {
+	a.setFlash(msg, FlashWarning)
+	slog.Warn(msg, logCtx...)
+}
+
+func (a *App) flashError(msg string, logCtx ...any) {
+	a.setFlash(msg, FlashError)
+	slog.Error(msg, logCtx...)
+}
+
+// markDirty sets the dirty flag and re-runs advisory validation.
+// Central hook point — all mutations should call this instead of setting dirty directly.
+// Future module system will extend this with additional post-mutation hooks.
+func (a *App) markDirty() {
+	a.dirty = true
+	a.runValidation()
+}
+
+// runValidation executes the advisory validation analyzer against the current projection.
+// Results are stored for display in status bar and details pane.
+// Never blocks or reverts mutations.
+func (a *App) runValidation() {
+	if a.validator == nil || a.proj == nil {
+		a.validationIssues = nil
+		return
+	}
+	a.validationIssues = a.validator.Analyze(a.proj)
+}
+
+// buildProblemsPickerItems formats validation issues for the picker.
+// Returns display items (errors first, then warnings) and a map from display string to node ID.
+func (a *App) buildProblemsPickerItems() ([]string, map[string]string) {
+	pmap := make(map[string]string, len(a.validationIssues))
+	var errors, warnings []string
+
+	for _, iss := range a.validationIssues {
+		// Get the node name for context
+		nodeName := ""
+		if node := a.proj.Nodes[iss.NodeID]; node != nil {
+			nodeName = nodeLabel(node)
+		}
+
+		var line string
+		switch iss.Severity {
+		case validation.SeverityError:
+			line = a.theme.Sym.Error + " " + iss.Message
+		default:
+			line = a.theme.Sym.Warning + " " + iss.Message
+		}
+		if nodeName != "" {
+			line += " (" + nodeName + ")"
+		}
+
+		// Ensure uniqueness (append node ID suffix if duplicate)
+		if _, exists := pmap[line]; exists {
+			line += " [" + iss.NodeID + "]"
+		}
+		pmap[line] = iss.NodeID
+
+		switch iss.Severity {
+		case validation.SeverityError:
+			errors = append(errors, line)
+		default:
+			warnings = append(warnings, line)
+		}
+	}
+
+	items := append(errors, warnings...)
+	return items, pmap
+}
 
 // quit persists history and returns the quit command.
 func (a App) quit() (tea.Model, tea.Cmd) {

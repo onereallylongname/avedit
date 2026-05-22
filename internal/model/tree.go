@@ -295,12 +295,12 @@ func (t TreeModel) renderLine(line TreeLine, active bool, maxWidth int) string {
 	var expander string
 	if line.HasChild {
 		if line.Expanded {
-			expander = theme.DefaultExpanders.Expanded
+			expander = t.theme.Sym.Expanded
 		} else {
-			expander = theme.DefaultExpanders.Collapsed
+			expander = t.theme.Sym.Collapsed
 		}
 	} else {
-		expander = theme.DefaultExpanders.Leaf
+		expander = t.theme.Sym.Leaf
 	}
 
 	// Node label
@@ -366,7 +366,7 @@ func (t TreeModel) nodeBadge(node *projection.Node) string {
 	if node.Kind == schema.KindField {
 		return t.fieldTypeBadge(node)
 	}
-	return kindBadge(node.Kind)
+	return t.kindBadge(node.Kind)
 }
 
 // fieldTypeBadge derives a short type label from a field's child type node(s).
@@ -431,7 +431,7 @@ func (t TreeModel) typeLabel(node *projection.Node) string {
 			}
 			return name
 		}
-		return "→"
+		return t.theme.Sym.NamedRef
 	case schema.KindUnion:
 		return t.unionBadge(node)
 	default:
@@ -520,7 +520,7 @@ func nodeLabel(node *projection.Node) string {
 }
 
 // kindBadge returns a short kind indicator.
-func kindBadge(kind schema.NodeKind) string {
+func (t TreeModel) kindBadge(kind schema.NodeKind) string {
 	switch kind {
 	case schema.KindSchema:
 		return "S"
@@ -541,7 +541,7 @@ func kindBadge(kind schema.NodeKind) string {
 	case schema.KindPrimitive:
 		return "·"
 	case schema.KindNamed:
-		return "→"
+		return t.theme.Sym.NamedRef
 	default:
 		return "?"
 	}

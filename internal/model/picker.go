@@ -318,7 +318,8 @@ func (p Picker) View() string {
 		if p.separators[idx] {
 			sb.WriteString(sepStyle.Render("   " + item))
 		} else if i == p.cursor {
-			sb.WriteString(activeStyle.Render(" ▸ " + item))
+			cursor := " " + p.theme.Sym.Cursor + " "
+			sb.WriteString(activeStyle.Render(cursor + item))
 		} else {
 			sb.WriteString(normalStyle.Render("   " + item))
 		}

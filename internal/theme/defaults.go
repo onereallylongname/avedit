@@ -27,6 +27,7 @@ func Dark() *Theme {
 
 	return &Theme{
 		Name: "dark",
+		Sym:  DefaultSymbols,
 
 		Fg:    fg,
 		Bg:    bg,

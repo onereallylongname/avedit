@@ -16,5 +16,16 @@
   "badge_map": "#8be9fd",
   "badge_union": "#ffb86c",
   "badge_fixed": "#f1fa8c",
-  "status_bg": "#21222c"
+  "status_bg": "#21222c",
+  "mode_normal": "#61afef",
+  "mode_edit": "#98c379",
+  "mode_search": "#e5c07b",
+  "mode_command": "#c678dd",
+  "symbols": {
+    "error": "†",
+    "warning": "‼",
+    "success": "♦",
+    "cursor": "🦇",
+    "named_ref": "»"
+  }
 }

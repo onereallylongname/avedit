@@ -257,7 +257,7 @@ func (d DetailsModel) View() string {
 		editing := d.editing && cur
 		pfx := "  "
 		if cur {
-			pfx = cs.Render("▸") + " "
+			pfx = cs.Render(d.theme.Sym.Cursor) + " "
 		}
 
 		switch attr.Kind {
@@ -272,15 +272,15 @@ func (d DetailsModel) View() string {
 		case AttrSelect:
 			label := ks.Render(pfx + attr.Key + ":")
 			if attr.Value == "" {
-				sb.WriteString(label + " " + es.Render("— ▾") + "\n")
+				sb.WriteString(label + " " + es.Render("— "+d.theme.Sym.DetailExpand) + "\n")
 			} else {
-				sb.WriteString(label + " " + vs.Render(attr.Value+" ▾") + "\n")
+				sb.WriteString(label + " " + vs.Render(attr.Value+" "+d.theme.Sym.DetailExpand) + "\n")
 			}
 
 		case AttrListItem:
 			indent := "    "
 			if cur {
-				indent = "  " + cs.Render("▸") + " "
+				indent = "  " + cs.Render(d.theme.Sym.Cursor) + " "
 			}
 			if editing {
 				sb.WriteString(indent + d.editor.View() + "\n")
@@ -291,7 +291,7 @@ func (d DetailsModel) View() string {
 		case AttrListAdd:
 			indent := "    "
 			if cur {
-				indent = "  " + cs.Render("▸") + " "
+				indent = "  " + cs.Render(d.theme.Sym.Cursor) + " "
 			}
 			if editing {
 				sb.WriteString(indent + d.editor.View() + "\n")

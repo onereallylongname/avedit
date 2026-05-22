@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,8 +39,30 @@ type ThemeFile struct {
 	BadgeFixed  string `json:"badge_fixed"`
 	BadgeNamed  string `json:"badge_named"`
 
-	// Status bar background
-	StatusBg string `json:"status_bg"`
+	// Status bar 
+	ModeNormal  string `json:"mode_normal"`
+	ModeEdit    string `json:"mode_edit"`
+	ModeSearch  string `json:"mode_search"`
+	ModeCommand string `json:"mode_command"`
+	StatusBg    string `json:"status_bg"`
+
+	// Symbols (all optional — omitted values use defaults)
+	Symbols *SymbolsFile `json:"symbols,omitempty"`
+}
+
+// SymbolsFile represents the optional symbols section in a theme JSON.
+type SymbolsFile struct {
+	Expanded     string `json:"expanded,omitempty"`
+	Collapsed    string `json:"collapsed,omitempty"`
+	Leaf         string `json:"leaf,omitempty"`
+	NamedRef     string `json:"named_ref,omitempty"`
+	Cursor       string `json:"cursor,omitempty"`
+	DetailExpand string `json:"detail_expand,omitempty"`
+	Error        string `json:"error,omitempty"`
+	Warning      string `json:"warning,omitempty"`
+	Success      string `json:"success,omitempty"`
+	ScrollUp     string `json:"scroll_up,omitempty"`
+	ScrollDown   string `json:"scroll_down,omitempty"`
 }
 
 // LoadFile reads a JSON theme file and builds a Theme.
@@ -76,6 +99,11 @@ func (tf *ThemeFile) Build() *Theme {
 	badgeUnion := hex(tf.BadgeUnion, "#ff9e64")
 	badgeFixed := hex(tf.BadgeFixed, "#2ac3de")
 	badgeNamed := hex(tf.BadgeNamed, or(tf.Secondary, "#bb9af7"))
+
+	modeNormal := hex(tf.ModeNormal, "#7aa2f7")
+	modeEdit := hex(tf.ModeEdit, "#9ece6a")
+	modeSearch := hex(tf.ModeSearch, "#e0af68")
+	modeCommand := hex(tf.ModeCommand, "#bb9af7")
 	statusBg := hex(tf.StatusBg, "#24283b")
 
 	borderStyle := lipgloss.NewStyle().
@@ -91,8 +119,11 @@ func (tf *ThemeFile) Build() *Theme {
 		name = "custom"
 	}
 
+	sym := buildSymbols(tf.Symbols)
+
 	return &Theme{
 		Name: name,
+		Sym:  sym,
 
 		Fg:    fg,
 		Bg:    bg,
@@ -142,10 +173,10 @@ func (tf *ThemeFile) Build() *Theme {
 		StatusStats: lipgloss.NewStyle().Foreground(dim).Padding(0, 1),
 		StatusHelp:  lipgloss.NewStyle().Foreground(muted).Padding(0, 1),
 
-		StatusNormal:  lipgloss.NewStyle().Background(primary).Foreground(bg).Bold(true).Padding(0, 1),
-		StatusEdit:    lipgloss.NewStyle().Background(success).Foreground(bg).Bold(true).Padding(0, 1),
-		StatusSearch:  lipgloss.NewStyle().Background(warning).Foreground(bg).Bold(true).Padding(0, 1),
-		StatusCommand: lipgloss.NewStyle().Background(secondary).Foreground(bg).Bold(true).Padding(0, 1),
+		StatusNormal:  lipgloss.NewStyle().Background(modeNormal).Foreground(bg).Bold(true).Padding(0, 1),
+		StatusEdit:    lipgloss.NewStyle().Background(modeEdit).Foreground(bg).Bold(true).Padding(0, 1),
+		StatusSearch:  lipgloss.NewStyle().Background(modeSearch).Foreground(bg).Bold(true).Padding(0, 1),
+		StatusCommand: lipgloss.NewStyle().Background(modeCommand).Foreground(bg).Bold(true).Padding(0, 1),
 	}
 }
 
@@ -242,6 +273,9 @@ func (r *Registry) loadFromPath(dir string) {
 	}
 	entries, err := os.ReadDir(dir)
 	if err != nil {
+		if !os.IsNotExist(err) {
+			slog.Warn("theme directory read failed", "dir", dir, "error", err)
+		}
 		return
 	}
 	for _, e := range entries {
@@ -251,6 +285,7 @@ func (r *Registry) loadFromPath(dir string) {
 		path := filepath.Join(dir, e.Name())
 		t, err := LoadFile(path)
 		if err != nil {
+			slog.Warn("theme file load failed", "path", path, "error", err)
 			continue
 		}
 		name := strings.TrimSuffix(e.Name(), ".json")
@@ -272,6 +307,48 @@ func userThemesDir() string {
 		return dir
 	}
 	return ""
+}
+
+// buildSymbols merges theme symbol overrides with defaults.
+func buildSymbols(sf *SymbolsFile) Symbols {
+	s := DefaultSymbols
+	if sf == nil {
+		return s
+	}
+	if sf.Expanded != "" {
+		s.Expanded = sf.Expanded
+	}
+	if sf.Collapsed != "" {
+		s.Collapsed = sf.Collapsed
+	}
+	if sf.Leaf != "" {
+		s.Leaf = sf.Leaf
+	}
+	if sf.NamedRef != "" {
+		s.NamedRef = sf.NamedRef
+	}
+	if sf.Cursor != "" {
+		s.Cursor = sf.Cursor
+	}
+	if sf.DetailExpand != "" {
+		s.DetailExpand = sf.DetailExpand
+	}
+	if sf.Error != "" {
+		s.Error = sf.Error
+	}
+	if sf.Warning != "" {
+		s.Warning = sf.Warning
+	}
+	if sf.Success != "" {
+		s.Success = sf.Success
+	}
+	if sf.ScrollUp != "" {
+		s.ScrollUp = sf.ScrollUp
+	}
+	if sf.ScrollDown != "" {
+		s.ScrollDown = sf.ScrollDown
+	}
+	return s
 }
 
 // hex converts a hex string to a color.Color via lipgloss with a fallback default.

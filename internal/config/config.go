@@ -4,6 +4,7 @@ package config
 
 import (
 	"encoding/json"
+	"log/slog"
 	"os"
 	"path/filepath"
 )
@@ -12,12 +13,14 @@ import (
 type Config struct {
 	Theme     string `json:"theme"`      // Default theme name
 	ThemesDir string `json:"themes_dir"` // Custom themes directory (optional)
+	LogLevel  string `json:"log_level"`  // Log level: debug, info, warn, error (default: error)
 }
 
 // DefaultConfig returns sensible defaults.
 func DefaultConfig() Config {
 	return Config{
-		Theme: "dark",
+		Theme:    "dark",
+		LogLevel: "error",
 	}
 }
 
@@ -28,9 +31,14 @@ func Load() Config {
 	path := FilePath()
 	data, err := os.ReadFile(path)
 	if err != nil {
+		if !os.IsNotExist(err) {
+			slog.Warn("config read failed, using defaults", "path", path, "error", err)
+		}
 		return cfg
 	}
-	_ = json.Unmarshal(data, &cfg)
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		slog.Warn("config parse failed, using defaults", "path", path, "error", err)
+	}
 	return cfg
 }
 
@@ -76,5 +84,7 @@ func (c Config) Save() error {
 func SetTheme(name string) {
 	cfg := Load()
 	cfg.Theme = name
-	_ = cfg.Save()
+	if err := cfg.Save(); err != nil {
+		slog.Error("config save failed", "path", FilePath(), "error", err)
+	}
 }
